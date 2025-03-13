@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation des Répartitions</title>
+
+  <!-- Liens vers les fichiers CSS -->
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+
+  <!-- Style personnalisé -->
+  <style>
+    body {
+      padding: 0px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+      transition: background 0.3s;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn-primary {
+      background-color: #003366;
+      border: 1px solid #003366;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0055A4;
+      border-color: #0055A4;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: 1px solid #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .large-btn {
+      width: 95px;
+    }
+    .taille-btn {
+      width: 140px;
+    }
+    .tailles-btn {
+      width: 90px;
+    }
+    .modal-content {
+      border-radius: 15px;
+    }
+    .modal-header {
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+    .modal-title {
+      font-weight: bold;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      border-radius: 0 0 15px 15px;
+    }
+    .container {
+      width: 1300px;
+    }
+    .badge-success {
+      background-color: #28a745;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+    }
+    .badge-warning {
+      background-color: #ffc107;
+      color: black;
+      padding: 5px 10px;
+      border-radius: 15px;
+    }
+
+
+    .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+  </style>
+
+  <!-- Liens vers les fichiers JS -->
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+</head>
+
+<body>
+<header>
+  <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);" >
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <a th:href="@{/ChefDepartement/Accueil}"><span>Accueil</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ChefDepartement/Enseignant}"><span>Utilisateurs</span></a>
+          </li>
+          <li>
+            <a th:href="@{/formation}"><span>Formation</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ue}"><span>Syllabus</span></a>
+          </li>
+          <li>
+            <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+          </li>
+          <li>
+            <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container mt-5">
+  <h1 class="text-center">Validation des Répartitions</h1>
+
+  <!-- Message de succès ou d'erreur -->
+  <div th:if="${success}" class="alert alert-success">
+    <p th:text="${success}"></p>
+  </div>
+  <div th:if="${error}" class="alert alert-danger">
+    <p th:text="${error}"></p>
+  </div>
+
+  <!-- Tableau des répartitions -->
+  <div class="table-responsive">
+    <table id="repartitionTable" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Date de Choix</th>
+        <th>Enseignant</th>
+        <th>Enseignement</th>
+        <th>Validée</th>
+        <th class="taille-btn">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="repartition : ${repartitions}">
+        <td th:text="${repartition.id}"></td>
+        <td th:text="${repartition.dateChoix}"></td>
+        <td th:text="${repartition.enseignant.nom + ' ' + repartition.enseignant.prenom}"></td>
+        <td th:text="${repartition.enseignement.ec.libelle + ' - ' + repartition.enseignement.type}"></td>
+        <td>
+          <span th:if="${repartition.valide}" class="badge badge-success" style="padding:15px; border-radius:25px; background-color: #0066cc;">Validée</span>
+          <span th:if="${!repartition.valide}" class="badge badge-warning" style="padding:15px; border-radius:25px; background-color: gray;">Non Validée</span>
+        </td>
+        <td>
+          <div class="btn-container">
+            <form th:action="@{/repartitions/valider}" method="post">
+              <input type="hidden" name="repartitionId" th:value="${repartition.id}" />
+              <input type="hidden" name="enseignantId" th:value="${repartition.enseignant.id}" />
+              <button type="submit" th:disabled="${repartition.valide}" class="btn btn-primary btn-sm" style=" backgroud: linear-gradient(45deg, #003366, #0055A4) ;padding:10px; border-radius:25px;">
+                Valider Choix
+              </button>
+            </form>
+          </div>
+        </td>
+
+
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $('#repartitionTable').DataTable({
+      paging: true,
+      "pageLength": 8,
+      "lengthMenu": [8, 10, 15, 20, 25],
+      searching: true,
+      ordering: true,
+      info: true,
+      responsive: true,
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+      }
+    });
+  });
+</script>
+</body>
+</html>

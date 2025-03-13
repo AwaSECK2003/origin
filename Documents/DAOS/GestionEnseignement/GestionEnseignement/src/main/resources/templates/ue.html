@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des UE</title>
+    <!-- Inclusion des CSS -->
+    <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" />
+    <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}" />
+
+    <!-- Style personnalisé -->
+    <style>
+        body {
+            padding: 0px;
+            background-color: #f4f7fc;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #003366;
+        }
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        .table thead th {
+            text-align: center;
+            background: linear-gradient(45deg, #003366, #0055A4);
+            color: white;
+            padding: 12px;
+            border-bottom: 2px solid #ddd;
+        }
+        .table tbody td {
+            text-align: center;
+            padding: 10px;
+            vertical-align: middle;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .table tbody tr:hover {
+            background-color: #e2e6ea;
+            transition: background 0.3s;
+        }
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn-primary {
+            background-color: #003366;
+            border: 1px solid #003366;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0055A4;
+            border-color: #0055A4;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border: 1px solid #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border: 1px solid #17a2b8;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .large-btn {
+            width: 95px;
+        }
+        .operations-columnn {
+            width: 80px;
+            text-align: center;
+        }
+        .modal-content {
+            border-radius: 15px;
+        }
+        .modal-header {
+            background: linear-gradient(45deg, #003366, #0055A4);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        .modal-title {
+            font-weight: bold;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            border-radius: 0 0 15px 15px;
+        }
+        .container {
+         width : 1500px;
+        }
+
+
+        .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+    </style>
+
+    <!-- Inclusion des JavaScript -->
+    <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+    <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+    <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);" >
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a th:href="@{/ChefDepartement/Accueil}"><span>Accueil</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/ChefDepartement/Enseignant}"><span>Utilisateurs</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/formation}"><span>Formation</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/ue}"><span>Syllabus</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+                    </li>
+                    <li>
+                        <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="container">
+    <h1 class="text-center my-4">Gestion des Unités d'Enseignement (UE)</h1>
+
+    <!-- Bouton Ajouter UE -->
+    <div class="text-center mb-4">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#form_Ajouter_UE" style="background: linear-gradient(45deg, #003366, #0055A4); padding:10px; border-radius:25px; ">Ajouter UE</button>
+    </div>
+
+    <!-- Début popup Ajouter UE -->
+    <div class="modal fade" id="form_Ajouter_UE" tabindex="-1" role="dialog" aria-labelledby="form_Ajouter_UELabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="form_Ajouter_UELabel">Ajouter une Unité d'Enseignement (UE)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/ajouter_ue}" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="code" class="control-label">Code</label>
+                            <input type="text" class="form-control" id="code" name="code" required placeholder="Entrez le code de l'UE">
+                        </div>
+                        <div class="form-group">
+                            <label for="libelle" class="control-label">Libellé</label>
+                            <input type="text" class="form-control" id="libelle" name="libelle" required placeholder="Entrez le libellé de l'UE">
+                        </div>
+                        <div class="form-group">
+                            <label for="credit" class="control-label">Crédits</label>
+                            <input type="number" class="form-control" id="credit" name="credit" required min="1" placeholder="Entrez le crédit de l'UE">
+                        </div>
+                        <div class="form-group">
+                            <label for="coefficient" class="control-label">Coefficient</label>
+                            <input type="number" class="form-control" id="coefficient" name="coefficient" required min="1" placeholder="Entrez le coefficient de l'UE">
+                        </div>
+                        <div class="form-group">
+                            <label for="semestre" class="control-label">Semestre</label>
+                            <select class="form-control" id="semestre" name="semestreId" required>
+                                <option th:each="semestre : ${semestres}" th:value="${semestre.id}" th:text="${semestre.intitule}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="classes" class="control-label">Classes</label>
+                            <select class="form-control" id="classes_" name="classeIds" multiple required>
+                                <option th:each="classe : ${listeDesClasses}" th:value="${classe.id}" th:text="${classe.nom}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px; padding:8px;">Fermer</button>
+                        <button type="submit" class="btn btn-primary" style="border-radius:25px;">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Fin popup Ajouter UE -->
+
+    <!-- Lister tous les UE -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="table_UE">
+            <thead>
+            <tr>
+                <th>Code</th>
+                <th>Libellé</th>
+                <th>Crédit</th>
+                <th>Coefficient</th>
+                <th>Semestre</th>
+                <th>Classe(s)</th>
+                <th>Opérations</th>
+                <th class="operations-columnn">Détails</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ue : ${listeDesUE}">
+                <td th:text="${ue.code}"></td>
+                <td th:text="${ue.libelle}"></td>
+                <td th:text="${ue.credit}"></td>
+                <td th:text="${ue.coefficient}"></td>
+                <td th:text="${ue.semestre != null} ? ${ue.semestre.intitule} : 'Non défini'"></td>
+                <td>
+                    <ul>
+                        <li th:each="classe : ${ue.classes}" th:text="${classe.nom}"></li>
+                    </ul>
+                </td>
+                <td>
+                    <div class="btn-container">
+                        <button class="btn btn-info btn-sm" th:data-target="'#form_Modifier_UE_' + ${ue.id}" data-toggle="modal" style="padding:10px; border-radius:25px; ">Modifier</button>
+                        <button type="button" class="btn btn-danger" data-toggle="modal"
+                                data-target="#form_Supprimer_UE"
+                                th:onclick="'setUeIdForDeletion(' + ${ue.id} + ')'" style="padding:10px; border-radius:25px; ">
+                            Supprimer
+                        </button>
+
+
+
+                        <button class="btn btn-warning btn-sm" th:data-target="'#popup_Archiver_' + ${ue.id}" data-toggle="modal" th:if="${!ue.estArchivee}" style="padding:10px; border-radius:25px; ">Archiver</button>
+                        <button class="btn btn-secondary btn-sm" th:data-target="'#popup_Desarchiver_' + ${ue.id}" data-toggle="modal" th:if="${ue.estArchivee}" style="padding:10px; border-radius:25px; ">Désarchiver</button>
+                        <button class="btn btn-success btn-sm" th:data-target="'#popup_Activer_' + ${ue.id}" data-toggle="modal" th:if="${!ue.active}" style="padding:10px; border-radius:25px; ">Activer</button>
+                        <button class="btn btn-danger btn-sm" th:data-target="'#popup_Desactiver_' + ${ue.id}" data-toggle="modal" th:if="${ue.active}" style="padding:10px; border-radius:25px; ">Désactiver</button>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-primary btn-sm large-btn" th:href="@{/details_ue(id=${ue.id})}" style="padding:10px; border-radius:25px; ">Voir</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#table_UE").DataTable({
+                paging: true,
+                "pageLength": 7,
+                "lengthMenu": [7, 10, 15, 20, 25],
+                searching: true,
+                ordering: true,
+                info: true,
+                responsive: true,
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+                }
+            });
+        });
+    </script>
+
+    <!-- Début popup Modifier UE -->
+    <div class="modal fade" th:each="ue : ${listeDesUE}" th:attr="id='form_Modifier_UE_' + ${ue.id}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier UE</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/modifier_ue}" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" th:value="${ue.id}">
+                        <div class="form-group">
+                            <label for="code_${ue.id}" class="control-label">Code</label>
+                            <input type="text" class="form-control" id="code_${ue.id}" name="code" th:value="${ue.code}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="libelle_${ue.id}" class="control-label">Libellé</label>
+                            <input type="text" class="form-control" id="libelle_${ue.id}" name="libelle" th:value="${ue.libelle}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="credit_${ue.id}" class="control-label">Crédits</label>
+                            <input type="number" class="form-control" id="credit_${ue.id}" name="credit" th:value="${ue.credit}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="coefficient_${ue.id}" class="control-label">Coefficient</label>
+                            <input type="number" class="form-control" id="coefficient_${ue.id}" name="coefficient" th:value="${ue.coefficient}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="semestre_${ue.id}" class="control-label">Semestre</label>
+                            <select class="form-control" id="semestre_${ue.id}" name="semestreId" required>
+                                <option th:each="semestre : ${semestres}" th:value="${semestre.id}" th:text="${semestre.intitule}" th:selected="${ue.semestre.id == semestre.id}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="classes" class="control-label">Classes</label>
+                            <select class="form-control" id="classes" name="classeIds" multiple required>
+                                <option th:each="classe : ${listeDesClasses}" th:value="${classe.id}" th:text="${classe.nom}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding:8px; border-radius:25px; ">Fermer</button>
+                        <button type="submit" class="btn btn-primary" style="border-radius:25px;">Modifier</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Fin popup Modifier UE -->
+
+
+    <div class="modal fade" id="form_Supprimer_UE" tabindex="-1" role="dialog" aria-labelledby="form_Supprimer_UELabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="form_Supprimer_UELabel">Supprimer une Unité d'Enseignement (UE)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/supprimer_ue}" method="post">
+                        <p>Êtes-vous sûr de vouloir supprimer cette UE ?</p>
+                        <input type="hidden" id="ueIdSupprimer" name="id"/>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Fermer</button>
+                            <button type="submit" class="btn btn-danger" style="border-radius:25px;" >Supprimer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fin popup Supprimer UE -->
+
+    <!--
+
+    <br>
+    <div>
+        <a class="btn btn-secondary" th:href="@{/maquette}" style="background-color: #003366; color:white; border-radius:25px;">
+            Retour à la maquette
+        </a>
+    </div>
+    <br>
+    -->
+
+    <!-- Popups Archiver, Désarchiver, Activer, Désactiver -->
+    <div th:each="ue : ${listeDesUE}">
+        <!-- Archiver -->
+        <div class="modal fade" th:attr="id='popup_Archiver_' + ${ue.id}">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmer l'archivage</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Voulez-vous vraiment archiver <span th:text="${ue.libelle}"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <a th:href="@{/archiver_ue(id=${ue.id})}" class="btn btn-warning" style="border-radius:25px;">Archiver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Désarchiver -->
+        <div class="modal fade" th:attr="id='popup_Desarchiver_' + ${ue.id}">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmer la désarchivation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Voulez-vous vraiment désarchiver <span th:text="${ue.libelle}"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <a th:href="@{/desarchiver_ue(id=${ue.id})}" class="btn btn-secondary" style="border-radius:25px;">Désarchiver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activer -->
+        <div class="modal fade" th:attr="id='popup_Activer_' + ${ue.id}">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmer l'activation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Voulez-vous vraiment activer <span th:text="${ue.libelle}"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <a th:href="@{/activer_ue(id=${ue.id})}" class="btn btn-success" style="border-radius:25px;">Activer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Désactiver -->
+        <div class="modal fade" th:attr="id='popup_Desactiver_' + ${ue.id}">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmer la désactivation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Voulez-vous vraiment désactiver <span th:text="${ue.libelle}"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <form th:action="@{/ue/desactiver/{id}(id=${ue.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" style="border-radius:25px;">Confirmer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+
+<script>
+    function setUeIdForDeletion(ueId) {
+        document.getElementById("ueIdSupprimer").value = ueId;
+    }
+</script>
+
+</html>

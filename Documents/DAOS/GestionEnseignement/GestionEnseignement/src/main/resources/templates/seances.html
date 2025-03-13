@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Séances</title>
+
+  <!-- Liens vers les fichiers CSS -->
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+
+  <!-- Style personnalisé -->
+  <style>
+    body {
+      padding: 0px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+      transition: background 0.3s;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn-primary {
+      background-color: #003366;
+      border: 1px solid #003366;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0055A4;
+      border-color: #0055A4;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: 1px solid #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .large-btn {
+      width: 95px;
+    }
+    .taille-btn {
+      width: 140px;
+    }
+    .tailles-btn {
+      width: 90px;
+    }
+    .modal-content {
+      border-radius: 15px;
+    }
+    .modal-header {
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+    .modal-title {
+      font-weight: bold;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      border-radius: 0 0 15px 15px;
+    }
+    .container {
+      width: 1300px;
+    }
+    .larg {
+      text-align: center;
+      width: 185px;
+    }
+
+
+    .navbar {
+         background : linear-gradient(45deg, #003366, #0055A4);
+        }
+        .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+  </style>
+
+  <!-- Liens vers les fichiers JS -->
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+</head>
+<body>
+
+<header>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <a th:href="@{/batiment}"><span>Batiment</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances}"><span>Seance</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+          </li>
+
+          <li>
+            <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection-salle}"><span>Salle Disponible</span></a>
+          </li>
+          <li>
+            <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+          </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+</header>
+<div class="container mt-5">
+  <h1>Liste des Séances</h1>
+
+  <!-- Bouton pour ajouter une séance -->
+  <div class="row" style="padding: 10px 0;">
+    <div class="col text-center">
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalAjouterSeance" style="background: linear-gradient(45deg, #003366, #0055A4); padding:10px; border-radius:25px;">
+        Ajouter une Séance
+      </button>
+    </div>
+  </div>
+
+  <!-- Tableau des séances -->
+  <div class="table-responsive">
+    <table id="seancesTable" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Jour</th>
+        <th>Heure de Début</th>
+        <th>Heure de Fin</th>
+        <th>Enseignant</th>
+        <th>Enseignement</th>
+        <th>Classe</th>
+        <th>Salle</th>
+        <th class="larg">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="seance : ${seances}">
+        <td th:text="${seance.id}"></td>
+       <!-- <td th:text="${seance.jour}"></td> -->
+        <td th:text="${seance.jour}"></td>
+        <td th:text="${seance.heureDebut}"></td>
+        <td th:text="${seance.heureFin}"></td>
+        <td th:if="${enseignantsParEnseignement.containsKey(seance.enseignement.id)}" th:text="${enseignantsParEnseignement.get(seance.enseignement.id).prenom + ' ' + enseignantsParEnseignement.get(seance.enseignement.id).nom}"></td>
+        <td th:text="${seance.enseignement != null && seance.enseignement.ec != null ? seance.enseignement.ec.libelle + ' - ' + seance.enseignement.type : 'N/A'}"></td>
+        <td th:text="${seance.classe.nom}"></td>
+        <td th:text="${seance.salle.nom}"></td>
+
+        <td>
+          <div class="btn-container">
+            <!-- Bouton Modifier -->
+            <button class="btn btn-warning btn-sm btn-modifier"
+                    data-toggle="modal"
+                    data-target="#modalModifierSeance"
+                    th:attr="data-id=${seance.id}, data-jour=${seance.jour}, data-heuredebut=${seance.heureDebut}, data-heurefin=${seance.heureFin}, data-enseignement=${seance.enseignement.id}, data-classe=${seance.classe.id}, data-salle=${seance.salle.id}"
+                    style="padding:10px; border-radius:25px;">Modifier</button>
+
+            <!-- Bouton Supprimer -->
+            <button class="btn btn-danger btn-sm btn-supprimer"
+                    data-toggle="modal"
+                    data-target="#modalSupprimerSeance"
+                    th:attr="data-id=${seance.id}"
+                    style="padding:10px; border-radius:25px;">Supprimer</button>
+          </div>
+        </td>
+
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <nav>
+    <ul class="pagination justify-content-center">
+      <li class="page-item"><a class="page-link" href="#" id="prevPage">Précédent</a></li>
+      <li class="page-item"><a class="page-link" href="#" id="nextPage">Suivant</a></li>
+    </ul>
+  </nav>
+
+  <!-- Modal pour ajouter une séance -->
+  <div class="modal fade" id="modalAjouterSeance" tabindex="-1" aria-labelledby="modalAjouterSeanceLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalAjouterSeanceLabel">Ajouter une Séance</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Formulaire d'ajout de séance -->
+          <form th:action="@{/seances/ajouter}" method="post">
+            <div class="form-group">
+              <label for="jour">Jour</label>
+              <input type="date" class="form-control" id="jour" name="jour" required>
+            </div>
+            <div class="form-group">
+              <label for="heureDebut">Heure de Début</label>
+              <input type="time" class="form-control" id="heureDebut" name="heureDebut" required>
+            </div>
+            <div class="form-group">
+              <label for="heureFin">Heure de Fin</label>
+              <input type="time" class="form-control" id="heureFin" name="heureFin" required>
+            </div>
+            <div class="form-group">
+              <label for="enseignement">Enseignement</label>
+              <select class="form-control" id="enseignement" name="enseignement" required>
+                <option th:each="enseignement : ${enseignements}" th:value="${enseignement.id}" th:text="${enseignement.ec.libelle + ' - ' + enseignement.type}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="classe">Classe</label>
+              <select class="form-control" id="classe" name="classe" required>
+                <option th:each="classe : ${classes}" th:value="${classe.id}" th:text="${classe.nom}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="salle">Salle</label>
+              <select class="form-control" id="salle" name="salle" required>
+                <option th:each="salle : ${salles}" th:value="${salle.id}" th:text="${salle.nom}"></option>
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Fermer</button>
+              <button type="submit" class="btn btn-primary" style="border-radius:25px;">Ajouter</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <div class="modal fade" id="modalModifierSeance" tabindex="-1" aria-labelledby="modalModifierSeanceLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalModifierSeanceLabel">Modifier une Séance</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Formulaire de modification de séance -->
+          <form th:action="@{/seances/modifier}" method="post">
+            <input type="hidden" id="seanceIdModifier" name="id">
+            <div class="form-group">
+              <label for="jourModifier">Jour</label>
+              <input type="date" class="form-control" id="jourModifier" name="jour" required>
+            </div>
+            <div class="form-group">
+              <label for="heureDebutModifier">Heure de Début</label>
+              <input type="time" class="form-control" id="heureDebutModifier" name="heureDebut" required>
+            </div>
+            <div class="form-group">
+              <label for="heureFinModifier">Heure de Fin</label>
+              <input type="time" class="form-control" id="heureFinModifier" name="heureFin" required>
+            </div>
+            <div class="form-group">
+              <label for="enseignementModifier">Enseignement</label>
+              <select class="form-control" id="enseignementModifier" name="enseignement" required>
+                <option th:each="enseignement : ${enseignements}" th:value="${enseignement.id}" th:text="${enseignement.ec.libelle + ' - ' + enseignement.type}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="classeModifier">Classe</label>
+              <select class="form-control" id="classeModifier" name="classe" required>
+                <option th:each="classe : ${classes}" th:value="${classe.id}" th:text="${classe.nom}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="salleModifier">Salle</label>
+              <select class="form-control" id="salleModifier" name="salle" required>
+                <option th:each="salle : ${salles}" th:value="${salle.id}" th:text="${salle.nom}"></option>
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px; padding : 8px;">Fermer</button>
+              <button type="submit" class="btn btn-primary" style="border-radius:25px;">Modifier</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalSupprimerSeance" tabindex="-1" aria-labelledby="modalSupprimerSeanceLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalSupprimerSeanceLabel">Supprimer une Séance</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Voulez-vous vraiment supprimer cette séance ?</p>
+          <form th:action="@{/seances/supprimer}" method="post">
+            <input type="hidden" id="seanceIdSupprimer" name="id">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+              <button type="submit" class="btn btn-danger" style="border-radius:25px;">Supprimer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    // Pagination
+    let rowsPerPage = 5;
+    let rows = $('#seancesTable tbody tr');
+    let totalRows = rows.length;
+    let currentPage = 0;
+
+    function showPage(page) {
+      rows.hide();
+      rows.slice(page * rowsPerPage, (page + 1) * rowsPerPage).show();
+    }
+
+    $('#prevPage').click(function(e) {
+      e.preventDefault();
+      if (currentPage > 0) {
+        currentPage--;
+        showPage(currentPage);
+      }
+    });
+
+    $('#nextPage').click(function(e) {
+      e.preventDefault();
+      if ((currentPage + 1) * rowsPerPage < totalRows) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    });
+
+    showPage(currentPage);
+
+    // Initialisation de DataTables
+    $('#seancesTable').DataTable({
+      paging: false, // Désactiver la pagination de DataTables (car nous utilisons notre propre pagination)
+      searching: true,
+      ordering: true,
+      info: true,
+      responsive: true,
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+      }
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Gérer l'ouverture du modal de modification
+    $('#modalModifierSeance').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Bouton qui a déclenché le modal
+        var id = button.data('id');
+        var jour = button.data('jour');
+        var heureDebut = button.data('heuredebut');
+        var heureFin = button.data('heurefin');
+        var enseignementId = button.data('enseignement');
+        var classeId = button.data('classe');
+        var salleId = button.data('salle');
+
+        var modal = $(this);
+        modal.find('#seanceId').val(id);
+        modal.find('#jourModif').val(jour);
+        modal.find('#heureDebutModif').val(heureDebut);
+        modal.find('#heureFinModif').val(heureFin);
+        modal.find('#enseignementModif').val(enseignementId);
+        modal.find('#classeModif').val(classeId);
+        modal.find('#salleModif').val(salleId);
+    });
+
+    // Gérer l'ouverture du modal de suppression
+    $('#modalSupprimerSeance').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Bouton qui a déclenché le modal
+        var id = button.data('id');
+
+        var modal = $(this);
+        modal.find('#seanceIdSupp').val(id);
+    });
+});
+
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Gérer l'ouverture du modal de modification
+    $('#modalModifierSeance').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget); // Bouton qui a déclenché le modal
+      var id = button.data('id');
+      var jour = button.data('jour');
+      var heureDebut = button.data('heuredebut');
+      var heureFin = button.data('heurefin');
+      var enseignementId = button.data('enseignement');
+      var classeId = button.data('classe');
+      var salleId = button.data('salle');
+
+      var modal = $(this);
+      modal.find('#seanceIdModifier').val(id);
+      modal.find('#jourModifier').val(jour);
+      modal.find('#heureDebutModifier').val(heureDebut);
+      modal.find('#heureFinModifier').val(heureFin);
+      modal.find('#enseignementModifier').val(enseignementId);
+      modal.find('#classeModifier').val(classeId);
+      modal.find('#salleModifier').val(salleId);
+    });
+
+    // Gérer l'ouverture du modal de suppression
+    $('#modalSupprimerSeance').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget); // Bouton qui a déclenché le modal
+      var id = button.data('id');
+
+      var modal = $(this);
+      modal.find('#seanceIdSupprimer').val(id);
+    });
+  });
+</script>
+
+
+
+</body>
+</html>

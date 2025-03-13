@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Enseignements</title>
+
+  <!-- Liens vers les fichiers CSS -->
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" />
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}" />
+
+  <!-- Style personnalisé -->
+  <style>
+    body {
+      padding: 0px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+      transition: background 0.3s;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn-primary {
+      background-color: #003366;
+      border: 1px solid #003366;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0055A4;
+      border-color: #0055A4;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: 1px solid #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .large-btn {
+      width: 95px;
+    }
+    .taille-btn {
+      width: 140px;
+    }
+    .tailles-btn {
+      width: 90px;
+    }
+    .modal-content {
+      border-radius: 15px;
+    }
+    .modal-header {
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+    .modal-title {
+      font-weight: bold;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      border-radius: 0 0 15px 15px;
+    }
+    .container {
+      width: 1500px;
+    }
+    .largeur {
+      width: 80px;
+    }
+    .column {
+      width: 160px;
+    }
+    .um {
+      width: 200px;
+    }
+
+
+    .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+  </style>
+
+  <!-- Liens vers les fichiers JS -->
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+</head>
+<body>
+
+<header>
+  <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);" >
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <a th:href="@{/formation}"><span>Formation</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ue}"><span>Syllabus</span></a>
+          </li>
+          <li>
+            <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+          </li>
+          <li>
+            <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Gestion des Enseignements</h1>
+
+  <!-- Bouton Ajouter Enseignement -->
+  <div class="text-center mb-4">
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#form_Ajouter_Enseignement" style="background: linear-gradient(45deg, #003366, #0055A4); padding:10px; border-radius:25px;">Ajouter un Enseignement</button>
+  </div>
+
+  <!-- Modal Formulaire d'ajout d'un nouvel enseignement -->
+  <div class="modal fade" id="form_Ajouter_Enseignement" tabindex="-1" role="dialog" aria-labelledby="form_Ajouter_EnseignementLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="form_Ajouter_EnseignementLabel">Ajouter un Nouvel Enseignement</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form th:action="@{/enseignements/ajouter}" method="post">
+            <div class="form-group">
+              <label for="maquette">Maquette:</label>
+              <select name="maquette" id="maquette" class="form-control">
+                <option th:each="maquette : ${maquettes}" th:value="${maquette.id}" th:text="${maquette.nom}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="classe">Classe:</label>
+              <select name="classe" id="classe" class="form-control">
+                <option th:each="classe : ${classes}" th:value="${classe.id}" th:text="${classe.nom}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="semestre">Semestre:</label>
+              <select name="semestre" id="semestre" class="form-control">
+                <option th:each="semestre : ${semestres}" th:value="${semestre.id}" th:text="${semestre.intitule}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ec">EC:</label>
+              <select name="ec" id="ec" class="form-control">
+                <option th:each="ec : ${ecs}" th:value="${ec.id}" th:text="${ec.libelle}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="type" style="display: none;">Type:</label>
+              <select name="type" id="type" class="form-control" style="display: none;">
+                <option value="CM">CM</option>
+                <option value="TP">TP</option>
+                <option value="TD">TD</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="border-radius:25px;">Ajouter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des enseignements -->
+  <div class="table-responsive">
+    <table id="enseignementsTable" class="table table-striped table-bordered">
+      <thead>
+      <tr>
+        <th>Maquette</th>
+        <th>Classe</th>
+        <th>Semestre</th>
+        <th>EC</th>
+        <th class="um">UE</th>
+        <th>Type</th>
+        <th>Volume Horaire</th>
+        <th class="column">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="enseignement : ${enseignements}">
+        <td th:text="${enseignement.maquette.nom}"></td>
+        <td th:text="${enseignement.classe.nom}"></td>
+        <td th:text="${enseignement.semestre.intitule}"></td>
+        <td th:text="${enseignement.ec.libelle}"></td>
+        <td th:text="${enseignement.ec.ue.libelle}"></td>
+        <td th:text="${enseignement.type}"></td>
+        <td>
+          <span th:text="${enseignement.totalHeures >= 0} ? ' ' + ${enseignement.totalHeures} + 'h' : ''"></span>
+        </td>
+        <td>
+          <div class="btn-container">
+            <!-- Modal pour modifier l'enseignement -->
+            <button type="button" class="btn btn-warning btn-sm largeur" data-toggle="modal" data-target="#modifierEnseignementModal" th:data-id="${enseignement.id}" th:data-maquette="${enseignement.maquette.id}" th:data-classe="${enseignement.classe.id}" th:data-semestre="${enseignement.semestre.id}" th:data-ec="${enseignement.ec.id}" th:data-type="${enseignement.type}" th:data-totalheures="${enseignement.totalHeures}" style="padding:10px; border-radius:25px;">
+              Modifier
+            </button>
+            <!-- Modal pour supprimer l'enseignement -->
+            <button type="button" class="btn btn-danger btn-sm largeur" data-toggle="modal" data-target="#supprimerEnseignementModal" th:data-id="${enseignement.id}" style="padding:10px; border-radius:25px;">Supprimer</button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal pour modifier un enseignement -->
+<div class="modal fade" id="modifierEnseignementModal" tabindex="-1" role="dialog" aria-labelledby="modifierEnseignementModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modifierEnseignementModalLabel">Modifier l'Enseignement</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/enseignements/modifier}" method="post">
+          <input type="hidden" name="id" id="enseignementId">
+          <div class="form-group">
+            <label for="maquette_">Maquette:</label>
+            <select name="maquette" id="maquette_" class="form-control">
+              <option th:each="maquette : ${maquettes}" th:value="${maquette.id}" th:text="${maquette.nom}"></option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="classe_">Classe:</label>
+            <select name="classe" id="classe_" class="form-control">
+              <option th:each="classe : ${classes}" th:value="${classe.id}" th:text="${classe.nom}"></option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="semestre_">Semestre:</label>
+            <select name="semestre" id="semestre_" class="form-control">
+              <option th:each="semestre : ${semestres}" th:value="${semestre.id}" th:text="${semestre.intitule}"></option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ec_">EC:</label>
+            <select name="ec" id="ec_" class="form-control">
+              <option th:each="ec : ${ecs}" th:value="${ec.id}" th:text="${ec.libelle}"></option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="type_">Type:</label>
+            <select name="type" id="type_" class="form-control">
+              <option value="CM">CM</option>
+              <option value="TP">TP</option>
+              <option value="TD">TD</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="border-radius:25px;">Sauvegarder les modifications</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="supprimerEnseignementModal" tabindex="-1" role="dialog" aria-labelledby="supprimerEnseignementModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="supprimerEnseignementModalLabel">Confirmer la suppression</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer cet enseignement ?</p>
+      </div>
+      <div class="modal-footer">
+        <form th:action="@{/enseignements/supprimer}" method="post">
+          <input type="hidden" name="id" id="enseignementIdSupprimer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+          <button type="submit" class="btn btn-danger" style="border-radius:25px;">Supprimer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // Activation de DataTables sur la table
+    $('#enseignementsTable').DataTable({
+      paging: true,
+      "pageLength": 8,
+      "lengthMenu": [8, 10, 15, 20, 25],
+      searching: true,
+      ordering: true,
+      info: true,
+      responsive: true,
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+      }
+    });
+
+    // Lorsque l'utilisateur clique sur le bouton Modifier, passer l'ID à modifier
+    $('button[data-toggle="modal"][data-target="#modifierEnseignementModal"]').on('click', function() {
+      var enseignementId = $(this).data('id'); // Récupère l'ID de l'enseignement
+      $('#enseignementId').val(enseignementId); // Assigne l'ID à l'input caché
+      $('#maquette_').val($(this).data('maquette')); // Assigne la maquette
+      $('#classe_').val($(this).data('classe')); // Assigne la classe
+      $('#semestre_').val($(this).data('semestre')); // Assigne le semestre
+      $('#ec_').val($(this).data('ec')); // Assigne l'EC
+      $('#type_').val($(this).data('type')); // Assigne le type
+      $('#totalHeures_').val($(this).data('totalheures')); // Assigne les heures
+    });
+
+    // Lorsque l'utilisateur clique sur le bouton Supprimer, passer l'ID à supprimer
+    $('button[data-toggle="modal"][data-target="#supprimerEnseignementModal"]').on('click', function() {
+      var enseignementId = $(this).data('id');
+      $('#enseignementIdSupprimer').val(enseignementId);
+    });
+  });
+</script>
+</body>
+</html>

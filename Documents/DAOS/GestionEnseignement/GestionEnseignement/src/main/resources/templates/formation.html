@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Formations</title>
+    <!-- Inclusion des CSS -->
+    <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" />
+    <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}" />
+
+    <style>
+        body {
+            padding: 0px ; /*20px;*/
+            background-color: linear-gradient(45deg, #003366, #0055A4); /* #f4f7fc; */
+            font-family: Arial, sans-serif;
+
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #003366;
+        }
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        .table thead th {
+            text-align: center;
+            background: linear-gradient(45deg, #003366, #0055A4);
+            color: white;
+            padding: 12px;
+            border-bottom: 2px solid #ddd;
+        }
+        .table tbody td {
+            text-align: center;
+            padding: 10px;
+            vertical-align: middle;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .table tbody tr:hover {
+            background-color: #e2e6ea;
+            transition: background 0.3s;
+        }
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn-primary {
+            background-color: #003366;
+            border: 1px solid #003366;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0055A4;
+            border-color: #0055A4;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border: 1px solid #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border: 1px solid #17a2b8;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .btn-large {
+            text-align: center;
+            width: 120px;
+        }
+        .modal-content {
+            border-radius: 15px;
+        }
+        .modal-header {
+            background: linear-gradient(45deg, #003366, #0055A4);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        .modal-title {
+            font-weight: bold;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            border-radius: 0 0 15px 15px;
+        }
+        .container {
+         width : 1300px;
+        }
+
+
+
+
+
+        .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+    </style>
+
+    <!-- Inclusion des JavaScript -->
+    <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+    <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+    <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);" >
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a th:href="@{/ChefDepartement/Accueil}"><span>Accueil</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/ChefDepartement/Enseignant}"><span>Utilisateurs</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/formation}"><span>Formation</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/ue}"><span>Syllabus</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+                    </li>
+                    <li>
+                        <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <h1 class="text-center my-4">Gestion des Formations</h1>
+
+    <!-- Bouton Ajouter Formation -->
+    <div class="text-center mb-4">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#form_Ajouter_Formation" style="background:linear-gradient(45deg, #003366, #0055A4); border-radius: 25px; padding: 10px 20px;">Ajouter une Formation</button>
+    </div>
+
+    <!-- Tableau des formations -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="table_Formations">
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Code</th>
+                <th>Niveau</th>
+                <th>Date de Début</th>
+                <th>Date de Fin</th>
+                <th>Actions</th>
+                <th>Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="formation : ${listeDesFormation}">
+                <td th:text="${formation.nom}"></td>
+                <td th:text="${formation.code}"></td>
+                <td th:text="${formation.niveau}"></td>
+                <td th:text="${#dates.format(formation.dateDebut, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#dates.format(formation.dateFin, 'dd/MM/yyyy')}"></td>
+                <td>
+                    <div class="btn-container">
+                        <button class="btn btn-info btn-sm" data-toggle="modal" th:data-target="'#form_Modifier_Formation_' + ${formation.id}" style="border-radius: 25px; padding: 10px 20px;">Modifier</button>
+                        <button class="btn btn-warning btn-sm" data-toggle="modal" th:data-target="'#form_Archiver_Formation_' + ${formation.id}" style="border-radius: 25px; padding: 10px 20px;">Archiver</button>
+                        <button class="btn btn-success btn-sm" data-toggle="modal" th:data-target="'#form_Desarchiver_Formation_' + ${formation.id}" th:if="${formation.archive}" style="border-radius: 25px; padding: 10px 20px;">Désarchiver</button>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-primary btn-sm large-btn" th:href="@{/classe}" style="padding:10px; border-radius:25px; ">Ajouter Classe</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#table_Formations").DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                responsive: true,
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+                }
+            });
+        });
+    </script>
+
+    <!-- Modal Ajouter Formation -->
+    <div class="modal fade" id="form_Ajouter_Formation" tabindex="-1" role="dialog" aria-labelledby="form_Ajouter_FormationLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="form_Ajouter_FormationLabel">Ajouter une Formation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/formation/ajouter}" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="nom">Nom</label>
+                            <input type="text" class="form-control" id="nom" name="nom" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="code">Code</label>
+                            <input type="text" class="form-control" id="code" name="code" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="niveau">Niveau</label>
+                            <input type="number" class="form-control" id="niveau" name="niveau" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateDebut">Date de Début</label>
+                            <input type="date" class="form-control" id="dateDebut" name="dateDebut" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateFin">Date de Fin</label>
+                            <input type="date" class="form-control" id="dateFin" name="dateFin" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 25px; padding:8px;">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Modifier Formation -->
+    <div class="modal fade" th:each="formation : ${listeDesFormation}" th:attr="id='form_Modifier_Formation_' + ${formation.id}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifier Formation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/formation/modifier}" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" th:value="${formation.id}">
+                        <div class="form-group">
+                            <label for="nom_${formation.id}">Nom</label>
+                            <input type="text" class="form-control" id="nom_${formation.id}" name="nom" th:value="${formation.nom}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="code_${formation.id}">Code</label>
+                            <input type="text" class="form-control" id="code_${formation.id}" name="code" th:value="${formation.code}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="niveau_${formation.id}">Niveau</label>
+                            <input type="number" class="form-control" id="niveau_${formation.id}" name="niveau" th:value="${formation.niveau}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateDebut_${formation.id}">Date de Début</label>
+                            <input type="date" class="form-control" id="dateDebut_${formation.id}" name="dateDebut" th:value="${#dates.format(formation.dateDebut, 'yyyy-MM-dd')}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateFin_${formation.id}">Date de Fin</label>
+                            <input type="date" class="form-control" id="dateFin_${formation.id}" name="dateFin" th:value="${#dates.format(formation.dateFin, 'yyyy-MM-dd')}" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 25px; padding:8px;">Fermer</button>
+                        <button type="submit" class="btn btn-primary" style="border-radius: 25px;">Modifier</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Archiver Formation -->
+    <div class="modal fade" th:each="formation : ${listeDesFormation}" th:attr="id='form_Archiver_Formation_' + ${formation.id}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Archiver Formation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/formation/archiver}" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" th:value="${formation.id}">
+                        <p>Êtes-vous sûr de vouloir archiver la formation "<span th:text="${formation.nom}"></span>" ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 25px;">Annuler</button>
+                        <button type="submit" class="btn btn-warning" style="border-radius: 25px;">Archiver</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Désarchiver Formation -->
+    <div class="modal fade" th:each="formation : ${listeDesFormation}" th:attr="id='form_Desarchiver_Formation_' + ${formation.id}">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Désarchiver Formation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/formation/desarchiver}" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" th:value="${formation.id}">
+                        <p>Voulez-vous vraiment désarchiver la formation "<span th:text="${formation.nom}"></span>" ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius: 25px;">Annuler</button>
+                        <button type="submit" class="btn btn-success" style="border-radius: 25px;">Désarchiver</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

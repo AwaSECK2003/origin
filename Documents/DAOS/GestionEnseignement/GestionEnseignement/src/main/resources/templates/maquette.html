@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Maquettes</title>
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+
+  <style>
+    body {
+      padding: 0px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+      transition: background 0.3s;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn-primary {
+      background-color: #003366;
+      border: 1px solid #003366;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0055A4;
+      border-color: #0055A4;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: 1px solid #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .large {
+      width: 85px;
+      text-align: center;
+    }
+    .fut {
+      width: 350px;
+    }
+    .container {
+         width : 1500px;
+        }
+
+    .navbar-nav  li a {
+         color: white !important; /* Blanc par défaut */
+          /* font-weight: bold; */
+          transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);" >
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <a th:href="@{/ChefDepartement/Accueil}"><span>Accueil</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ChefDepartement/Enseignant}"><span>Utilisateurs</span></a>
+          </li>
+          <li>
+            <a th:href="@{/formation}"><span>Formation</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ue}"><span>Syllabus</span></a>
+          </li>
+          <li>
+            <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+          </li>
+          <li>
+            <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+  <h1 class="text-center my-4">Gestion des Maquettes</h1>
+
+  <!-- Bouton Ajouter Maquette -->
+  <div class="text-center mb-4">
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#form_Ajouter_Maquette" style="background: linear-gradient(45deg, #003366, #0055A4); border-radius:25px; padding: 10px 20px;">Ajouter une Maquette</button>
+  </div>
+
+  <!-- Tableau des maquettes -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped" id="table_Maquettes">
+      <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Classe</th>
+        <th>Semestre</th>
+        <th>Statut</th>
+        <th class="fut">Actions</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="maquette : ${maquettes}">
+        <td th:text="${maquette.nom}"></td>
+        <td th:text="${maquette.description}"></td>
+        <td th:text="${maquette.classe.nom}"></td>
+        <td th:text="${maquette.semestre.intitule}"></td>
+        <td th:text="${maquette.estArchivee ? 'Archivée' : (maquette.estActive ? 'Active' : 'Désactivée')}"></td>
+        <td>
+          <div class="btn-container">
+            <button class="btn btn-info btn-sm" data-toggle="modal" th:data-target="'#form_Modifier_Maquette_' + ${maquette.id}" style="background: linear-gradient(45deg, #003366, #0055A4); border-radius:25px;">Modifier</button>
+            <button class="btn btn-warning btn-sm" data-toggle="modal" th:data-target="'#form_Archiver_Maquette_' + ${maquette.id}" style="border-radius:25px;">Archiver</button>
+            <button class="btn btn-primary btn-sm" data-toggle="modal" th:data-target="'#form_Desarchiver_Maquette_' + ${maquette.id}" th:if="${maquette.estArchivee}" style="border-radius:25px; padding: 10px 20px;">Désarchiver</button>
+            <button class="btn btn-success btn-sm" data-toggle="modal" th:data-target="'#form_Activer_Maquette_' + ${maquette.id}" th:if="${!maquette.estActive}" style="border-radius:25px; padding: 10px 20px;">Activer</button>
+            <button class="btn btn-secondary btn-sm" data-toggle="modal" th:data-target="'#form_Desactiver_Maquette_' + ${maquette.id}" th:if="${maquette.estActive}" style="border-radius:25px; padding: 10px 20px;">Désactiver</button>
+          </div>
+        </td>
+        <!--
+        <td>
+          <a class="btn btn-primary btn-sm" th:href="@{/maquette/details_maquette(classeId=${maquette.classe.id}, semestreId=${maquette.semestre.id})}" style="background: linear-gradient(45deg, #003366, #0055A4); border-radius:25px;">Voir</a>
+        </td>
+        -->
+        <td>
+          <a class="btn btn-primary btn-sm" th:href="@{/maquette/details_ues_ecs(classeId=${maquette.classe.id}, semestreId=${maquette.semestre.id})}" style="background: linear-gradient(45deg, #003366, #0055A4); border-radius:25px;">Voir Maquette</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal Ajouter Maquette -->
+  <div class="modal fade" id="form_Ajouter_Maquette" tabindex="-1" role="dialog" aria-labelledby="form_Ajouter_Maquette_Label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form th:action="@{/maquette/ajouter}" method="post" th:object="${maquette}">
+          <div class="modal-header">
+            <h5 class="modal-title" id="form_Ajouter_Maquette_Label">Ajouter une Maquette</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="nom">Nom</label>
+              <input type="text" class="form-control" id="nom" name="nom" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea class="form-control" id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="classe">Classe</label>
+              <select class="form-control" id="classe" name="classeId" required>
+                <option th:each="classe : ${listeDesClasse}" th:value="${classe.id}" th:text="${classe.nom}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="semestre">Semestre</label>
+              <select class="form-control" id="semestre" name="semestreId" required>
+                <option th:each="semestre : ${semestres}" th:value="${semestre.id}" th:text="${semestre.intitule}"></option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px; padding: 10px 20px;">Annuler</button>
+            <button type="submit" class="btn btn-primary" style="background: linear-gradient(45deg, #003366, #0055A4); border-radius:25px;">Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $('#table_Maquettes').DataTable({
+        paging: true,
+        "pageLength": 7,
+        "lengthMenu": [7, 10, 15, 20, 25],
+        searching: true,
+        ordering: true,
+        info: true,
+        responsive: true,
+        language: {
+          url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+        }
+      });
+    });
+  </script>
+
+  <!-- Modals pour Modifier, Archiver, Désarchiver, Activer, Désactiver -->
+  <div th:each="maquette : ${maquettes}">
+
+
+
+    <!-- Modal Modifier -->
+    <div class="modal fade" th:id="'form_Modifier_Maquette_' + ${maquette.id}" tabindex="-1" role="dialog" aria-labelledby="modifierMaquetteLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form th:action="@{/maquette/modifier}" method="post" th:object="${maquette}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modifierMaquetteLabel">Modifier une Maquette</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" name="id" th:value="${maquette.id}">
+              <div class="form-group">
+                <label for="nom">Nom</label>
+                <input type="text" class="form-control" name="nom" th:value="${maquette.nom}" required>
+              </div>
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" name="description" th:text="${maquette.description}" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="classe">Classe</label>
+                <select class="form-control" name="classeId" required>
+                  <option th:each="classe : ${listeDesClasse}"
+                          th:value="${classe.id}"
+                          th:text="${classe.nom}"
+                          th:selected="${classe.id == maquette.classe.id}"></option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="semestre">Semestre</label>
+                <select class="form-control" name="semestreId" required>
+                  <option th:each="semestre : ${semestres}"
+                          th:value="${semestre.id}"
+                          th:text="${semestre.intitule}"
+                          th:selected="${semestre.id == maquette.semestre.id}"></option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;padding: 10px 20px;">Annuler</button>
+              <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Archiver -->
+    <div class="modal fade" th:id="'form_Archiver_Maquette_' + ${maquette.id}" tabindex="-1" role="dialog" aria-labelledby="archiverMaquetteLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form th:action="@{/maquette/archiver}" method="post" th:object="${maquette}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="archiverMaquetteLabel">Archiver la Maquette</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Êtes-vous sûr de vouloir archiver la maquette <span th:text="${maquette.nom}"></span> ?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;padding: 10px 20px;">Annuler</button>
+              <button type="submit" class="btn btn-warning" style="border-radius:25px;padding: 10px 20px;">Archiver</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Désarchiver -->
+    <div class="modal fade" th:id="'form_Desarchiver_Maquette_' + ${maquette.id}" tabindex="-1" role="dialog" aria-labelledby="desarchiverMaquetteLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form th:action="@{/maquette/desarchiver}" method="post" th:object="${maquette}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="desarchiverMaquetteLabel">Désarchiver la Maquette</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Êtes-vous sûr de vouloir désarchiver la maquette <span th:text="${maquette.nom}"></span> ?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;padding: 10px 20px;">Annuler</button>
+              <button type="submit" class="btn btn-primary" style="border-radius:25px;padding: 10px 20px;">Désarchiver</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Activer -->
+    <div class="modal fade" th:id="'form_Activer_Maquette_' + ${maquette.id}" tabindex="-1" role="dialog" aria-labelledby="activerMaquetteLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form th:action="@{/maquette/activer}" method="post" th:object="${maquette}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="activerMaquetteLabel">Activer la Maquette</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Êtes-vous sûr de vouloir activer la maquette <span th:text="${maquette.nom}"></span> ?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;padding: 10px 20px;">Annuler</button>
+              <button type="submit" class="btn btn-success" style="border-radius:25px;padding: 10px 20px;">Activer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Désactiver -->
+    <div class="modal fade" th:id="'form_Desactiver_Maquette_' + ${maquette.id}" tabindex="-1" role="dialog" aria-labelledby="desactiverMaquetteLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form th:action="@{/maquette/desactiver}" method="post" th:object="${maquette}">
+            <div class="modal-header">
+              <h5 class="modal-title" id="desactiverMaquetteLabel">Désactiver la Maquette</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Êtes-vous sûr de vouloir désactiver la maquette <span th:text="${maquette.nom}"></span> ?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;padding: 10px 20px;">Annuler</button>
+              <button type="submit" class="btn btn-secondary" style="border-radius:25px;padding: 10px 20px;">Désactiver</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

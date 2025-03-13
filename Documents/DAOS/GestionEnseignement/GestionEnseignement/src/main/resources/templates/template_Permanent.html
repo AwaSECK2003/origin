@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <link  rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+  <link  rel="stylesheet" href="../static/css/buttons.dataTables.min.css" th:href="@{/css/buttons.dataTables.min.css}"/>
+  <link  rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/dataTables.buttons.min.js" th:src="@{/js/dataTables.buttons.min.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+  <style>
+        body {
+           /*background: url('/images/home_page5.jpg')  no-repeat center top 50px fixed;  */
+           background: url('/images/home_page8.jpg')  no-repeat center top -10px fixed;
+           background-size: cover;
+           margin: 0;
+           padding:0;
+           width: 100vw;
+           height: 100vh;
+       }
+       .footer {
+           position: fixed;
+           bottom: 0;
+           width: 100%;
+           background: linear-gradient(45deg, #003366, #0055A4); ;
+           color: white;
+           text-align: center;
+           padding: 0px 0px;
+       }
+       .navbar-left li a {
+         color: white !important; /* Blanc par défaut */
+         transition: color 0.3s ease-in-out;
+       }
+       .navbar-left li a:hover {
+           color: #FFC0CB !important; /* Rose clair au survol */
+       }
+       .dropdown-toggle {
+       color: white !important; /* Blanc par défaut */
+       }
+       .dropdown-toggle:hover {
+        color: #FFC0CB !important; /* Rose clair au survol */
+       }
+  </style>
+
+  <title>Permanent</title>
+</head>
+<body>
+
+<header>
+  <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4); border-color:white;">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <a th:href="@{/Permanent/Accueil}"><span>Accueil</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+          </li>
+          <li>
+            <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+          </li>
+          <li>
+            <a th:href="@{/repartitions/selection-enseignement}"><span>Choix</span></a>
+          </li>
+          <li>
+            <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span th:text="${prenom+'. '+nom}"></span><span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a th:href="@{/profil}"><span>Profil</span></a>
+              </li>
+              <li><a th:href="@{/logout}"><span>Deconnexion</span></a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+</header>
+
+<section layout:fragment="content">
+
+
+
+</section>
+
+<footer class="footer">
+  <p>&copy; 2025 Université Assane SECK de Ziguinchor. Tous droits réservés.</p>
+</footer>
+
+
+
+
+
+</body>
+</html>

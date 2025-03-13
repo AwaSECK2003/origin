@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des choix définitifs</title>
+
+  <!-- Liens vers les fichiers CSS -->
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Style personnalisé -->
+  <style>
+    body {
+      padding: 20px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    /*
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+      background: white;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    */
+
+
+    .table {
+      width: 100%; /* Fait en sorte que le tableau occupe toute la largeur du conteneur */
+      min-width: 1330px; /* Ajustez cette valeur selon votre besoin */
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+      background: white;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-left: -50px;
+      position: center;
+    }
+
+
+    .table:hover {
+      transform: translateY(-5px);
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+      transition: background-color 0.3s ease;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+    }
+    .container {
+      max-width: 1800px;
+      margin-left: 70px;
+    }
+
+
+    .alert {
+      border-radius: 8px;
+    }.
+    
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Repartition des enseignements</h2>
+  <!-- Messages de succès ou d'erreur -->
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>Succès !</strong> <p th:text="${success}"></p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Erreur !</strong> <p th:text="${error}"></p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Tableau des choix définitifs -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <table id="choixDefinitifsTable" class="table table-bordered table-striped table-hover">
+        <thead>
+        <tr>
+          <th>Classe</th>
+          <th>Semestre</th>
+          <th>UE</th>
+          <th>Coefficient</th>
+          <th>Enseignant</th>
+          <th>CM</th>
+          <th>Responsable TD</th>
+          <th>TD</th>
+          <th>Responsable TP</th>
+          <th>TP</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ligne : ${tableau}">
+          <td th:text="${ligne[0]}"></td> <!-- Classe -->
+          <td th:text="${ligne[1]}"></td> <!-- Semestre -->
+          <td th:text="${ligne[2]}"></td> <!-- UE -->
+          <td th:text="${ligne[3]}"></td> <!-- Coefficient -->
+          <td th:text="${ligne[4]}"></td> <!-- Enseignant CM -->
+          <td th:text="${ligne[5]}"></td> <!-- Durée CM -->
+          <td th:text="${ligne[6]}"></td> <!-- Enseignant TD -->
+          <td th:text="${ligne[7]}"></td> <!-- Durée TD -->
+          <td th:text="${ligne[8]}"></td> <!-- Enseignant TP -->
+          <td th:text="${ligne[9]}"></td> <!-- Durée TP -->
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Liens vers les fichiers JS -->
+<script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+<script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+<script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+<script>
+  $(document).ready(function () {
+    $('#choixDefinitifsTable').DataTable({
+      paging: true,
+      "pageLength": 10,
+      "lengthMenu": [10, 15, 20, 25, 30],
+      searching: true,
+      ordering: true,
+      info: true,
+      responsive: true,
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+      }
+    });
+  });
+</script>
+</body>
+</html>

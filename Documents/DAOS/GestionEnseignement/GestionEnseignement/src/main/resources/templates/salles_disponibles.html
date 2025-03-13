@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Salles Disponibles</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+        padding: 0px;
+        background-color: #f4f7fc;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #003366;
+        font-weight: 600;
+        font-size: 2.5rem;
+    }
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        background: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .card-title {
+        color: #003366;
+        font-weight: 500;
+        font-size: 1.5rem;
+    }
+    .card-text {
+        color: #555;
+        font-size: 1.1rem;
+    }
+    .table {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        background: white;
+        margin-top: 20px;
+    }
+    .table thead th {
+        text-align: center;
+        background: linear-gradient(45deg, #003366, #0055A4);
+        color: white;
+        padding: 15px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border: none;
+    }
+    .table tbody td {
+        text-align: center;
+        padding: 12px;
+        vertical-align: middle;
+        font-size: 1rem;
+        color: #333;
+        border: none;
+    }
+    .table tbody tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+        background-color: #e2e6ea;
+        transition: background 0.3s;
+    }
+    .alert {
+        margin-top: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+    .btn-back {
+        margin-top: 20px;
+        background: linear-gradient(45deg, #003366, #0055A4);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-back:hover {
+        background: linear-gradient(45deg, #0055A4, #003366);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 85, 164, 0.3);
+    }
+    .icon {
+        margin-right: 8px;
+    }
+    .container {
+    width:700px;
+    }
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Titre -->
+  <h1><i class="fas fa-door-open icon"></i>Salles Disponibles</h1>
+
+  <!-- Détails de la plage horaire -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title"><i class="fas fa-calendar-alt icon"></i>Plage horaire sélectionnée</h5>
+      <p class="card-text">
+        <strong>Jour :</strong> <span th:text="${jour}"></span><br>
+        <strong>Heure de début :</strong> <span th:text="${heureDebut}"></span><br>
+        <strong>Heure de fin :</strong> <span th:text="${heureFin}"></span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Tableau des salles disponibles -->
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+      <tr>
+        <th><i class="fas fa-door-closed icon"></i>Nom de la salle</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="salle : ${sallesDisponibles}">
+        <td th:text="${salle.nom}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Message si aucune salle n'est disponible -->
+  <div th:if="${#lists.isEmpty(sallesDisponibles)}" class="alert alert-warning">
+    <i class="fas fa-exclamation-circle icon"></i>Aucune salle disponible pour cette plage horaire.
+  </div>
+
+  <!-- Bouton de retour -->
+  <div class="text-center">
+    <a th:href="@{/seances/selection-salle}" class="btn btn-back">
+      <i class="fas fa-arrow-left icon"></i>Retour à la sélection
+    </a>
+  </div>
+</div>
+
+<!-- Intégration de Bootstrap JS (optionnel) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

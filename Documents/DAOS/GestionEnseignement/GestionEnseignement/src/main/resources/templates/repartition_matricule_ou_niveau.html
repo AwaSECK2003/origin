@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechercher les Répartitions</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background: linear-gradient(45deg, #003366, #0055A4);
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            color: #333;
+        }
+
+        h1, h2 {
+            color: #003366;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #0055A4;
+        }
+
+        .btn-primary {
+            background-color: #0055A4;
+            border-color: #003366;
+        }
+
+        .btn-primary:hover {
+            background-color: #003366;
+            border-color: #0055A4;
+        }
+
+        .table {
+            margin-top: 20px;
+        }
+
+        .table th {
+            background-color: #0055A4;
+            color: #fff;
+        }
+
+        .table td {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .no-results {
+            color: #ff4444;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center mb-4">Rechercher les Répartitions d'un Enseignant</h1>
+
+    <!-- Formulaire de recherche -->
+    <form th:action="@{/repartitions/rechercherRepartitions}" method="get" class="mb-5">
+        <div class="mb-3">
+            <h2>Enseignant Permanent</h2>
+            <label for="matricule" class="form-label">Matricule :</label>
+            <input type="text" id="matricule" name="matricule" class="form-control" placeholder="Entrez le matricule">
+        </div>
+        <button type="submit" class="btn btn-primary" style="border-radius:25px;">Rechercher</button>
+    </form>
+
+    <!-- Affichage des résultats -->
+    <h2>Résultats de la recherche</h2>
+    <div th:if="${repartitions != null and !repartitions.isEmpty()}">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date de Choix</th>
+                <th>Enseignant</th>
+                <th>Enseignement</th>
+                <th>Validé</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="repartition : ${repartitions}">
+                <td th:text="${repartition.id}"></td>
+                <td th:text="${#dates.format(repartition.dateChoix, 'yyyy-MM-dd')}"></td>
+                <td th:text="|${repartition.enseignant.nom} ${repartition.enseignant.prenom}|"></td>
+                <td th:text="${repartition.enseignement.ec.libelle}"></td>
+                <td th:text="${repartition.valide} ? 'Oui' : 'Non'"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p th:if="${repartitions != null and repartitions.isEmpty()}" class="no-results">Aucune répartition trouvée.</p>
+</div>
+
+<!-- Bootstrap JS (optionnel, pour les fonctionnalités interactives) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

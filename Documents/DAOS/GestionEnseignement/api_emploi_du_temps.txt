@@ -1,0 +1,4 @@
+http://localhost:8080/api/pdf?dateDebut=2024-12-08
+
+
+Pour télécharger et imprimer l'emploi du temps

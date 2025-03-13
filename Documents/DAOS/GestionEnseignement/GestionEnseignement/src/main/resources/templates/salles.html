@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Salles</title>
+
+  <!-- Liens vers les fichiers CSS -->
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+  <link rel="stylesheet" href="../static/css/buttons.dataTables.min.css" th:href="@{/css/buttons.dataTables.min.css}"/>
+
+  <!-- Style personnalisé -->
+  <style>
+    body {
+      padding: 0px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+      transition: background 0.3s;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn-primary {
+      background-color: #003366;
+      border: 1px solid #003366;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0055A4;
+      border-color: #0055A4;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: 1px solid #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .large-btn {
+      width: 95px;
+    }
+    .taille-btn {
+      width: 140px;
+    }
+    .tailles-btn {
+      width: 90px;
+    }
+    .modal-content {
+      border-radius: 15px;
+    }
+    .modal-header {
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+    .modal-title {
+      font-weight: bold;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      border-radius: 0 0 15px 15px;
+    }
+    .container {
+      width: 1300px;
+    }
+    .larg {
+      text-align: center;
+      width: 135px;
+    }
+    .container {
+     width : 1200px;
+    }
+
+
+    .navbar {
+         background : linear-gradient(45deg, #003366, #0055A4);
+        }
+        .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+  </style>
+
+  <!-- Liens vers les fichiers JS -->
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+  <script src="../static/js/dataTables.buttons.min.js" th:src="@{/js/dataTables.buttons.min.js}"></script>
+</head>
+<body>
+<header>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <a th:href="@{/batiment}"><span>Batiment</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances}"><span>Seance</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+          </li>
+
+          <li>
+            <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection-salle}"><span>Salle Disponible</span></a>
+          </li>
+          <li>
+            <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+          </li>
+
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+</header>
+
+<div class="container mt-5">
+  <h1>Gestion des Salles</h1>
+
+  <!-- Bouton pour ajouter une salle -->
+
+  <div class="text-center">
+    <button type="button" class="btn btn-success mb-3" data-toggle="modal" data-target="#form_Ajouter_Salle" style="background: linear-gradient(45deg, #003366, #0055A4); padding:10px; border-radius:25px;">Ajouter Salle</button>
+  </div>
+
+  <!-- Table des salles -->
+  <div class="table-responsive">
+    <table id="table_Salle" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Capacité</th>
+        <th>Bâtiment</th>
+        <th class="larg">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="salle : ${listeDesSalles}">
+        <td th:text="${salle.nom}"></td>
+        <td th:text="${salle.capacite}"></td>
+        <td th:text="${salle.batiment.nom}"></td>
+        <td>
+          <div class="btn-container">
+            <button class="btn btn-info btn-sm" th:data-target="'#form_Modifier_Salle_' + ${salle.id}" data-toggle="modal" style="padding:10px; border-radius:25px;">Modifier</button>
+            <button class="btn btn-danger btn-sm" th:data-target="'#form_Supprimer_Salle_' + ${salle.id}" data-toggle="modal" style="padding:10px; border-radius:25px;">Supprimer</button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Début popup Ajouter Salle -->
+  <div class="modal fade" id="form_Ajouter_Salle" tabindex="-1" role="dialog" aria-labelledby="form_Ajouter_SalleLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="form_Ajouter_SalleLabel">Ajouter une Salle</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/salles/ajouter}" method="post">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="nom" class="control-label">Nom</label>
+              <input type="text" class="form-control" id="nom" name="nom" required>
+            </div>
+            <div class="form-group">
+              <label for="capacite" class="control-label">Capacité</label>
+              <input type="number" class="form-control" id="capacite" name="capacite" required>
+            </div>
+            <div class="form-group">
+              <label for="batiment" class="control-label">Bâtiment</label>
+              <select class="form-control" id="batiment" name="batiment.id" required>
+                <option th:each="batiment : ${batiments}" th:value="${batiment.id}" th:text="${batiment.nom}"></option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Fermer</button>
+            <button type="submit" class="btn btn-primary" style="border-radius:25px;">Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Fin popup Ajouter Salle -->
+
+  <!-- Début popup Modifier Salle -->
+  <div class="modal fade" th:each="salle : ${listeDesSalles}" th:id="'form_Modifier_Salle_' + ${salle.id}" tabindex="-1" role="dialog" aria-labelledby="form_Modifier_SalleLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="form_Modifier_SalleLabel">Modifier Salle</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/salles/modifier}" method="post">
+          <div class="modal-body">
+            <input type="hidden" name="id" th:value="${salle.id}">
+            <div class="form-group">
+              <label for="nom_${salle.id}" class="control-label">Nom</label>
+              <input type="text" class="form-control" id="nom_${salle.id}" name="nom" th:value="${salle.nom}" required>
+            </div>
+            <div class="form-group">
+              <label for="capacite_${salle.id}" class="control-label">Capacité</label>
+              <input type="number" class="form-control" id="capacite_${salle.id}" name="capacite" th:value="${salle.capacite}" required>
+            </div>
+            <div class="form-group">
+              <label for="batiment_${salle.id}" class="control-label">Bâtiment</label>
+              <select class="form-control" id="batiment_${salle.id}" name="batiment.id" required>
+                <option th:each="batiment : ${batiments}" th:value="${batiment.id}" th:text="${batiment.nom}" th:selected="${batiment.id == salle.batiment.id}"></option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Fermer</button>
+            <button type="submit" class="btn btn-primary" style="border-radius:25px;">Modifier</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Fin popup Modifier Salle -->
+
+  <!-- Début popup Supprimer Salle -->
+  <div class="modal fade" th:each="salle : ${listeDesSalles}" th:id="'form_Supprimer_Salle_' + ${salle.id}" tabindex="-1" role="dialog" aria-labelledby="form_Supprimer_SalleLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="form_Supprimer_SalleLabel">Confirmer la suppression</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/salles/supprimer}" method="post">
+          <div class="modal-body">
+            <input type="hidden" name="id" th:value="${salle.id}">
+            <p>Êtes-vous sûr de vouloir supprimer la salle "<span th:text="${salle.nom}"></span>" ?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+            <button type="submit" class="btn btn-danger" style="border-radius:25px;">Supprimer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Fin popup Supprimer Salle -->
+</div>
+
+<!-- Script pour initialiser DataTable -->
+<script>
+  $(document).ready(function() {
+    $('#table_Salle').DataTable({
+      paging: true,
+     "pageLength": 8,
+     "lengthMenu": [8, 10, 15, 20, 25],
+      searching: true,
+      ordering: true,
+      info: true,
+      responsive: true,
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+      }
+    });
+  });
+</script>
+</body>
+</html>

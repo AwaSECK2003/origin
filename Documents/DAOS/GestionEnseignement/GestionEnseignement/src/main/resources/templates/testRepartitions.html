@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Répartitions</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+</head>
+<body>
+<div class="container mt-4">
+  <h2 class="mb-4">Liste des Répartitions</h2>
+
+  <div class="text-center mb-4">
+    <!-- Bouton pour ouvrir le modal d'ajout -->
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#form_Ajouter_Repartition">
+      Ajouter un Choix
+    </button>
+  </div>
+
+  <table id="repartitionsTable" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Date de Choix</th>
+      <th>Nombre d'Heures</th>
+      <th>Enseignant</th>
+      <th>Enseignement</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="repartition : ${repartitions}">
+      <td th:text="${repartition.id}"></td>
+      <td th:text="${repartition.dateChoix}"></td>
+      <td th:text="${repartition.nombreHeures}"></td>
+      <td th:text="${repartition.enseignant.nom} + ' ' + ${repartition.enseignant.prenom}"></td>
+      <td th:text="${repartition.enseignement}"></td>
+      <td>
+        <!-- Bouton Modifier -->
+        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" th:data-bs-target="'#form_Modifier_Repartition_' + ${repartition.id}">
+          Modifier
+        </button>
+
+        <!-- Bouton Supprimer -->
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" th:data-bs-target="'#form_Supprimer_Repartition_' + ${repartition.id}">
+          Supprimer
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MODAL AJOUTER -->
+<div class="modal fade" id="form_Ajouter_Repartition" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Ajouter une Répartition</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/repartitions/ajouter}" th:object="${repartition}" method="post">
+          <div class="mb-3">
+            <label class="form-label">Date de Choix :</label>
+            <input type="date" class="form-control" th:field="*{dateChoix}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nombre d'Heures :</label>
+            <input type="number" class="form-control" th:field="*{nombreHeures}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Enseignant :</label>
+            <select class="form-select" th:field="*{enseignant.id}">
+              <option th:each="enseignant : ${enseignants}" th:value="${enseignant.id}"
+                      th:text="${enseignant.nom} + ' ' + ${enseignant.prenom}"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Enseignement :</label>
+            <div>
+              <div th:each="enseignement : ${enseignements}" class="form-check">
+                <input class="form-check-input" type="radio" th:id="'enseignement_' + ${enseignement.id}"
+                       th:name="enseignementId" th:value="${enseignement.id}" required>
+                <label class="form-check-label" th:for="'enseignement_' + ${enseignement.id}"
+                       th:text="${enseignement.nom}"></label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MODIFIER -->
+<div th:each="repartition : ${repartitions}" th:id="'form_Modifier_Repartition_' + ${repartition.id}" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modifier la Répartition</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/repartitions/modifier}" method="post">
+          <input type="hidden" th:value="${repartition.id}" name="id">
+          <div class="mb-3">
+            <label class="form-label">Date de Choix :</label>
+            <input type="date" class="form-control" th:value="${repartition.dateChoix}" name="dateChoix" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nombre d'Heures :</label>
+            <input type="number" class="form-control" th:value="${repartition.nombreHeures}" name="nombreHeures" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Enseignement :</label>
+            <div>
+              <div th:each="enseignement : ${enseignements}" class="form-check">
+                <input class="form-check-input" type="radio" th:id="'enseignement_modif_' + ${enseignement.id}"
+                       th:name="enseignementId" th:value="${enseignement.id}"
+                       th:checked="${enseignement.id == repartition.enseignement.id}" required>
+                <label class="form-check-label" th:for="'enseignement_modif_' + ${enseignement.id}"
+                       th:text="${enseignement.nom}"></label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-warning">Modifier</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('#repartitionsTable').DataTable();
+  });
+</script>
+</body>
+</html>

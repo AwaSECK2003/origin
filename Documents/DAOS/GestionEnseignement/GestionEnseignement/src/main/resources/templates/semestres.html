@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des Semestres</title>
+  <!-- Liens vers les fichiers CSS -->
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+
+  <!-- Style personnalisé -->
+  <style>
+    body {
+      padding: 0px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+      transition: background 0.3s;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn-primary {
+      background-color: #003366;
+      border: 1px solid #003366;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0055A4;
+      border-color: #0055A4;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: 1px solid #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .large-btn {
+      width: 95px;
+    }
+    .taille-btn {
+      width: 140px;
+    }
+    .tailles-btn {
+      width: 90px;
+    }
+    .modal-content {
+      border-radius: 15px;
+    }
+    .modal-header {
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+    .modal-title {
+      font-weight: bold;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      border-radius: 0 0 15px 15px;
+    }
+    .container {
+     width:1200px;
+    }
+
+
+    .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+  </style>
+
+  <!-- Liens vers les fichiers JS -->
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+</head>
+<body>
+<header>
+  <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);" >
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <a th:href="@{/ChefDepartement/Accueil}"><span>Accueil</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ChefDepartement/Enseignant}"><span>Utilisateurs</span></a>
+          </li>
+          <li>
+            <a th:href="@{/formation}"><span>Formation</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ue}"><span>Syllabus</span></a>
+          </li>
+          <li>
+            <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+          </li>
+          <li>
+            <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container mt-5">
+  <h1 class="text-center">Liste des Semestres</h1>
+
+  <!-- Bouton pour ajouter un semestre -->
+  <div class="row mb-3">
+    <div class="col text-center">
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ajouterSemestreModal" style="background: linear-gradient(45deg, #003366, #0055A4); padding:10px; border-radius:25px;">Ajouter Semestre</button>
+    </div>
+  </div>
+
+  <!-- Tableau des semestres -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped" id="table_Semestres">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Code</th>
+        <th>Intitulé</th>
+        <th>Année</th>
+        <th class="taille-btn">Actions</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="semestre : ${semestres}">
+        <td th:text="${semestre.id}"></td>
+        <td th:text="${semestre.code}"></td>
+        <td th:text="${semestre.intitule}"></td>
+        <td th:text="${semestre.annee}"></td>
+        <td>
+          <div class="btn-container">
+            <button class="btn btn-info btn-sm" data-toggle="modal" th:data-target="'#form_Modifier_Semestre' + ${semestre.id}" style="padding:10px; border-radius:25px;">Modifier</button>
+            <button class="btn btn-danger btn-sm" data-toggle="modal" th:data-target="'#form_Supprimer_Semestre' + ${semestre.id}" style="padding:10px; border-radius:25px;">Supprimer</button>
+          </div>
+        </td>
+        <td>
+          <a class="btn btn-primary btn-sm" th:href="@{/maquette}" style="border-radius:25px; padding : 10px;">Ajouter Maquette</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal pour ajouter un semestre -->
+<div class="modal fade" id="ajouterSemestreModal" tabindex="-1" role="dialog" aria-labelledby="ajouterSemestreModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ajouterSemestreModalLabel">Ajouter un Semestre</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form th:action="@{/semestres/ajouter}" method="post">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="code">Code du Semestre</label>
+            <input type="text" class="form-control" id="code" name="code" required />
+          </div>
+          <div class="form-group">
+            <label for="intitule">Intitulé</label>
+            <input type="text" class="form-control" id="intitule" name="intitule" required />
+          </div>
+          <div class="form-group">
+            <label for="annee">Année</label>
+            <input type="number" class="form-control" id="annee" name="annee" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding:8px; border-radius:25px;">Annuler</button>
+          <button type="submit" class="btn btn-primary" style="border-radius:25px;">Ajouter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modals pour modifier et supprimer un semestre (répétition pour chaque semestre) -->
+<div th:each="semestre : ${semestres}">
+  <!-- Modal pour modifier un semestre -->
+  <div class="modal fade" th:id="'form_Modifier_Semestre' + ${semestre.id}" tabindex="-1" role="dialog" aria-labelledby="modifierSemestreModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modifierSemestreModalLabel">Modifier Semestre</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{'/semestres/modifier/' + ${semestre.id}}" method="post">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="code">Code du Semestre</label>
+              <input type="text" class="form-control" id="code_" name="code" th:value="${semestre.code}" required />
+            </div>
+            <div class="form-group">
+              <label for="intitule">Intitulé</label>
+              <input type="text" class="form-control" id="intitule_" name="intitule" th:value="${semestre.intitule}" required />
+            </div>
+            <div class="form-group">
+              <label for="annee">Année</label>
+              <input type="number" class="form-control" id="annee_" name="annee" th:value="${semestre.annee}" required />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding:8px; border-radius:25px;">Annuler</button>
+            <button type="submit" class="btn btn-primary" style=" border-radius:25px;">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal pour supprimer un semestre -->
+  <div class="modal fade" th:id="'form_Supprimer_Semestre' + ${semestre.id}" tabindex="-1" role="dialog" aria-labelledby="supprimerSemestreModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="supprimerSemestreModalLabel">Supprimer Semestre</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{'/semestres/supprimer/' + ${semestre.id}}" method="post">
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer le semestre <strong th:text="${semestre.intitule}"></strong> ?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding:8px; border-radius:25px;">Annuler</button>
+            <button type="submit" class="btn btn-danger" style="border-radius:25px;">Supprimer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+      $("#table_Semestres").DataTable({
+          paging: true,
+          "pageLength": 7,
+          "lengthMenu": [7, 10, 15, 20, 25],
+          searching: true,
+          ordering: true,
+          info: true,
+          responsive: true,
+          language: {
+              url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+          }
+      });
+  });
+</script>
+</body>
+</html>

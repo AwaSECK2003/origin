@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Sélection de la semaine</title>
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" />
+  <style>
+    body {
+        padding: 20px;
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .form-container {
+        max-width: 500px;
+        width: 100%;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        text-align: center;
+    }
+    h1 {
+        margin-bottom: 25px;
+        color: #003366;
+        font-size: 28px;
+        font-weight: 600;
+    }
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #003366;
+    }
+    .form-group select,
+    .form-group input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        color: #333;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-group select:focus,
+    .form-group input[type="date"]:focus {
+        border-color: #0055A4;
+        box-shadow: 0 0 8px rgba(0, 85, 164, 0.3);
+        outline: none;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(45deg, #003366, #0055A4);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-submit:hover {
+        background: linear-gradient(45deg, #0055A4, #003366);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 85, 164, 0.3);
+    }
+    .btn-submit:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 85, 164, 0.3);
+    }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <h1>Sélection de la semaine</h1>
+  <form th:action="@{/seances/semaine}" method="get">
+    <div class="form-group">
+      <label for="classeId">Classe :</label>
+      <select id="classeId" name="classeId" required>
+        <option value="">-- Sélectionnez une classe --</option>
+        <option th:each="classe : ${classes}" th:value="${classe.id}" th:text="${classe.nom}"></option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="semestreId">Semestre :</label>
+      <select id="semestreId" name="semestreId" required>
+        <option value="">-- Sélectionnez un semestre --</option>
+        <option th:each="semestre : ${semestres}" th:value="${semestre.id}" th:text="${semestre.intitule}"></option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="dateDebutSemaine">Date de début de la semaine :</label>
+      <input type="date" id="dateDebutSemaine" name="dateDebutSemaine" required>
+    </div>
+    <button type="submit" class="btn-submit" style="border-radius:25px;">Afficher l'emploi du temps</button>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liste des choix définitifs</title>
+
+  <!-- Liens vers les fichiers CSS -->
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Style personnalisé -->
+  <style>
+    body {
+      padding: 20px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+
+
+      background: white;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .table:hover {
+      transform: translateY(-5px);
+      box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+      transition: background-color 0.3s ease;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .btn-primary {
+      background-color: #003366;
+      border: 1px solid #003366;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #0055A4;
+      border-color: #0055A4;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: 1px solid #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .large-btn {
+      width: 95px;
+    }
+    .taille-btn {
+      width: 140px;
+    }
+    .tailles-btn {
+      width: 90px;
+    }
+    .modal-content {
+      border-radius: 15px;
+    }
+    .modal-header {
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+    .modal-title {
+      font-weight: bold;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      border-radius: 0 0 15px 15px;
+    }
+    .container {
+      max-width: 1700px;
+      margin: auto;
+    }
+
+    .alert {
+      border-radius: 8px;
+    }
+  </style>
+
+  <!-- Liens vers les fichiers JS -->
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Repartition des enseignements</h2>
+  <!-- Afficher les messages de succès ou d'erreur -->
+  <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>Succès !</strong> <p th:text="${success}"></p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Erreur !</strong> <p th:text="${error}"></p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <!-- Tableau des choix définitifs -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <table id="choixDefinitifsTable" class="table table-bordered table-striped table-hover">
+        <thead>
+        <tr>
+          <th>Classe</th>
+          <th>Enseignement</th>
+          <th>Semestre</th>
+          <th>Type d'enseignement</th>
+          <th>Enseignant</th>
+          <th>Role</th>
+          <th>Volume Horaire</th>
+          <th>Credit</th>
+          <!--
+          <th>Durée du cours</th>
+          -->
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Boucle sur la liste des répartitions validées -->
+        <tr th:each="repartition : ${repartitionsValidees}">
+          <td th:text="${repartition.enseignement.classe.nom}"></td>
+          <td th:text="${repartition.enseignement.ec.libelle}"></td>
+          <td th:text="${repartition.enseignement.semestre.intitule}"></td>
+          <td th:text="${repartition.enseignement.type}"></td>
+          <td th:text="${repartition.enseignant.nom + ' ' + repartition.enseignant.prenom}"></td>
+          <td th:text="${rolesUtilisateurs[repartition.enseignant.id]}"></td>
+          <td th:text="${repartition.enseignement.totalHeures} + 'h'"></td>
+          <td th:text="${repartition.enseignement.ec.coefficient}"></td>
+          <!-- Afficher la durée totale -->
+          <!--
+          <td th:text="${dureeTotaleParEnseignement[repartition.enseignement.ec.id + '_' + repartition.enseignement.classe.id]} + 'h'"></td>
+          -->
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#choixDefinitifsTable').DataTable({
+      paging: true,
+      "pageLength": 10,
+      "lengthMenu": [10, 15, 20, 25, 30],
+      searching: true,
+      ordering: true,
+      info: true,
+      responsive: true,
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+      }
+    });
+  });
+</script>
+</body>
+</html>

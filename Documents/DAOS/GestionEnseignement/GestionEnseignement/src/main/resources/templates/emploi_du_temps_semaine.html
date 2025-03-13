@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Emploi du Temps - Semaine</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            padding: 0px;
+            background-color: #f4f7fc;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #003366;
+        }
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        .table th {
+            text-align: center;
+            background: linear-gradient(45deg, #003366, #0055A4);
+            color: white;
+            padding: 12px;
+            border-bottom: 2px solid #ddd;
+        }
+        .table td {
+            text-align: center;
+            padding: 10px;
+            vertical-align: middle;
+            border: 1px solid #dee2e6;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .table tbody tr:hover {
+            background-color: #e2e6ea;
+            transition: background 0.3s;
+        }
+        .table td.empty {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+        /* Couleurs pour les types de séances */
+        .cm {
+            background-color: #28a745; /* Vert vif pour CM */
+            color: white;
+        }
+        .tp {
+            background-color: #ffc107; /* Jaune vif pour TP */
+            color: black;
+        }
+        .td {
+            background-color: #fd7e14; /* Orange vif pour TD */
+            color: white;
+        }
+        .container {
+            width: 1500px;
+        }
+
+        .navbar-nav li a {
+            color: white !important;
+            transition: color 0.3s ease-in-out;
+        }
+        .navbar-left li a:hover {
+            color: #FFC0CB !important;
+        }
+        .navbar-right li a:hover {
+            color: #003366 !important;
+        }
+        .dropdown-menu li a {
+            color: black !important;
+        }
+        .dropdown-menu li a:hover {
+            color: #003366 !important;
+        }
+
+        /* Styles pour l'exportation en PDF */
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            .container {
+                width: 100%; /* Utilisez toute la largeur disponible */
+            }
+            .table {
+                font-size: 12px; /* Réduisez la taille de la police pour le PDF */
+            }
+            .table th, .table td {
+                padding: 8px; /* Réduisez le padding pour gagner de l'espace */
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="container">
+    <h1>Emploi du Temps - Classe <span th:text="${classe.nom}"></span> <span th:text="${semestre.intitule}"></span></h1>
+    <h2>Semaine du <span th:text="${#temporals.format(debutSemaine, 'dd/MM/yyyy')}"></span> au <span th:text="${#temporals.format(finSemaine, 'dd/MM/yyyy')}"></span></h2>
+
+    <div class="text-center mb-4">
+        <a th:href="@{/seances}" class="btn btn-primary" style="border-radius: 25px; padding: 10px;">Éditer l'emploi du temps</a>
+        <button id="export-pdf" class="btn btn-success" style="border-radius: 25px; padding: 10px;">Exporter en PDF</button>
+    </div>
+    <br>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Jour</th>
+            <!-- Afficher les heures en en-tête -->
+            <th th:each="horaire : ${plagesHoraires}" th:text="${horaire}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Boucle sur les jours de la semaine -->
+        <tr th:each="entry : ${emploiDuTemps}">
+            <td th:text="${entry.key}">Jour</td>
+            <!-- Afficher les séances correspondant aux horaires -->
+            <td th:each="horaire : ${plagesHoraires}">
+                <div th:each="seance : ${entry.value}"
+                     th:if="${seance.plageHoraire == horaire}"
+                     th:classappend="${seance.type == 'CM'} ? 'cm' :
+                                    (${seance.type == 'TP'} ? 'tp' :
+                                    (${seance.type == 'TD'} ? 'td' : ''))">
+                    <strong th:text="${seance.ec}"></strong><br>
+                    <span th:text="${seance.type}"></span><br>
+                    <span th:text="${seance.salle}"></span><br>
+                    <span th:text="${seance.enseignant}"></span>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.getElementById('export-pdf').addEventListener('click', function () {
+        const element = document.querySelector('.container'); // Sélectionnez le contenu à exporter
+        const options = {
+            margin: [5, 5, 5, 5], // Marges réduites
+            filename: 'emploi_du_temps_semaine.pdf', // Nom du fichier PDF
+            image: { type: 'jpeg', quality: 0.98 }, // Qualité des images
+            html2canvas: {
+                scale: 3, // Augmentez l'échelle pour une meilleure qualité
+                useCORS: true, // Autoriser les images externes
+                logging: true, // Activer les logs pour le débogage
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a3', // Utilisez un format plus large (A3)
+                orientation: 'landscape' // Orientation paysage
+            }
+        };
+
+        // Générer le PDF
+        html2pdf().from(element).set(options).save();
+    });
+</script>
+</body>
+</html>

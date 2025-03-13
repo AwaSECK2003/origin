@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Classes</title>
+  <!-- Inclusion des CSS -->
+  <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}" />
+  <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}" />
+
+  <!-- Style personnalisé -->
+  <style>
+    body {
+      padding: 0px;
+      background-color: #f4f7fc;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+    .table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+    .table thead th {
+      text-align: center;
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      padding: 12px;
+      border-bottom: 2px solid #ddd;
+    }
+    .table tbody td {
+      text-align: center;
+      padding: 10px;
+      vertical-align: middle;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .table tbody tr:hover {
+      background-color: #e2e6ea;
+      transition: background 0.3s;
+    }
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .btn-primary {
+      background-color: #003366;
+      border: 1px solid #003366;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 25px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #0055A4;
+      border-color: #0055A4;
+    }
+    .btn-success {
+      background-color: #28a745;
+      border: 1px solid #28a745;
+    }
+    .btn-success:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+    }
+    .btn-warning {
+      background-color: #ffc107;
+      border: 1px solid #ffc107;
+    }
+    .btn-warning:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border: 1px solid #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+    .btn-info {
+      background-color: #17a2b8;
+      border: 1px solid #17a2b8;
+    }
+    .btn-info:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      border: 1px solid #6c757d;
+    }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    .taille-btn {
+      width: 290px;
+      text-align: center;
+    }
+    .modal-content {
+      border-radius: 15px;
+    }
+    .modal-header {
+      background: linear-gradient(45deg, #003366, #0055A4);
+      color: white;
+      border-radius: 15px 15px 0 0;
+    }
+    .modal-title {
+      font-weight: bold;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .modal-footer {
+      border-radius: 0 0 15px 15px;
+    }
+    .container {
+     width:1300px;
+    }
+
+
+
+    .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+
+  </style>
+
+  <!-- Inclusion des JavaScript -->
+  <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+  <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+  <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+</head>
+<body>
+<header>
+  <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);" >
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <a th:href="@{/ChefDepartement/Accueil}"><span>Accueil</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ChefDepartement/Enseignant}"><span>Utilisateurs</span></a>
+          </li>
+          <li>
+            <a th:href="@{/formation}"><span>Formation</span></a>
+          </li>
+          <li>
+            <a th:href="@{/ue}"><span>Syllabus</span></a>
+          </li>
+          <li>
+            <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+          </li>
+          <li>
+            <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+          </li>
+          <li>
+            <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+  <h1 class="text-center my-4">Gestion des Classes</h1>
+
+  <!-- Bouton Ajouter Classe -->
+  <div class="text-center mb-4">
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#form_Ajouter_Classe" style="background: linear-gradient(45deg, #003366, #0055A4); padding:10px; border-radius:25px; ">Ajouter une Classe</button>
+  </div>
+
+  <!-- Tableau des classes -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped" id="table_Classes">
+      <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Formation</th>
+        <th class="taille-btn">Actions</th>
+        <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="classe : ${listeDesClasses}">
+        <td th:text="${classe.nom}"></td>
+        <td th:text="${classe.description}"></td>
+        <td th:text="${classe.formation.code}"></td>
+        <td>
+          <div class="btn-container">
+            <button class="btn btn-info btn-sm" data-toggle="modal" th:data-target="'#form_Modifier_Classe_' + ${classe.id}" style="padding:10px; border-radius:25px;">Modifier</button>
+            <button class="btn btn-warning btn-sm" data-toggle="modal" th:data-target="'#form_Archiver_Classe_' + ${classe.id}" style="padding:10px; border-radius:25px;">Archiver</button>
+            <button class="btn btn-danger btn-sm" data-toggle="modal" th:data-target="'#form_Supprimer_Classe_' + ${classe.id}" style="padding:10px; border-radius:25px;">Supprimer</button>
+            <button class="btn btn-primary btn-sm" data-toggle="modal" th:data-target="'#form_Desarchiver_Classe_' + ${classe.id}" style="padding:10px; border-radius:25px;">Désarchiver</button>
+          </div>
+        </td>
+        <td>
+          <a class="btn btn-primary btn-sm large-btn" th:href="@{/semestres}" style="padding:10px; border-radius:25px; ">Ajouter Semestre</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+        $("#table_Classes").DataTable({
+            paging: true,
+            "pageLength": 7,
+            "lengthMenu": [7, 10, 15, 20, 25],
+            searching: true,
+            ordering: true,
+            info: true,
+            responsive: true,
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+            }
+        });
+    });
+  </script>
+
+  <!-- Modal Ajouter Classe -->
+  <div class="modal fade" id="form_Ajouter_Classe" tabindex="-1" role="dialog" aria-labelledby="form_Ajouter_ClasseLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="form_Ajouter_ClasseLabel">Ajouter une Classe</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/classe/ajouter}" method="post">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="nom">Nom</label>
+              <input type="text" class="form-control" id="nom" name="nom" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <input type="text" class="form-control" id="description" name="description" required>
+            </div>
+            <div class="form-group">
+              <label for="formation">Formation Associée</label>
+              <select class="form-control" id="formation" name="formationCode" required>
+                <option th:each="formation : ${listeDesFormation}" th:value="${formation.code}" th:text="${formation.code}"></option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px; padding:8px;">Fermer</button>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Modifier Classe -->
+  <div class="modal fade" th:each="classe : ${listeDesClasses}" th:attr="id='form_Modifier_Classe_' + ${classe.id}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modifier Classe</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/classe/modifier}" method="post">
+          <div class="modal-body">
+            <input type="hidden" name="id" th:value="${classe.id}">
+            <div class="form-group">
+              <label for="nom_${classe.id}">Nom</label>
+              <input type="text" class="form-control" id="nom_${classe.id}" name="nom" th:value="${classe.nom}" required>
+            </div>
+            <div class="form-group">
+              <label for="description_${classe.id}">Description</label>
+              <input type="text" class="form-control" id="description_${classe.id}" name="description" th:value="${classe.description}" required>
+            </div>
+            <div class="form-group">
+              <label for="formation_${classe.id}">Formation Associée</label>
+              <select class="form-control" id="formation_${classe.id}" name="formation.id">
+                <option th:each="formation : ${listeDesFormation}" th:value="${formation.id}" th:text="${formation.code}"
+                        th:selected="${formation.id == classe.formation.id}">
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Fermer</button>
+            <button type="submit" class="btn btn-primary" style="border-radius:25px;">Modifier</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Archiver Classe -->
+  <div class="modal fade" th:each="classe : ${listeDesClasses}" th:attr="id='form_Archiver_Classe_' + ${classe.id}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Archiver Classe</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/classe/archiver}" method="post">
+          <div class="modal-body">
+            <input type="hidden" name="id" th:value="${classe.id}">
+            <p>Êtes-vous sûr de vouloir archiver la classe "<span th:text="${classe.nom}"></span>" ?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+            <button type="submit" class="btn btn-warning" style="border-radius:25px;">Archiver</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Supprimer Classe -->
+  <div class="modal fade" th:each="classe : ${listeDesClasses}" th:attr="id='form_Supprimer_Classe_' + ${classe.id}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Supprimer Classe</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/classe/supprimer}" method="post">
+          <div class="modal-body">
+            <input type="hidden" name="id" th:value="${classe.id}">
+            <p>Êtes-vous sûr de vouloir supprimer la classe "<span th:text="${classe.nom}"></span>" ?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+            <button type="submit" class="btn btn-danger" style="border-radius:25px;">Supprimer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Désarchiver Classe -->
+  <div class="modal fade" th:each="classe : ${listeDesClasses}" th:attr="id='form_Desarchiver_Classe_' + ${classe.id}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Désarchiver Classe</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form th:action="@{/classe/desarchiver}" method="post">
+          <div class="modal-body">
+            <input type="hidden" name="id" th:value="${classe.id}">
+            <p>Êtes-vous sûr de vouloir désarchiver la classe "<span th:text="${classe.nom}"></span>" ?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+            <button type="submit" class="btn btn-primary" style="border-radius:25px;">Désarchiver</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

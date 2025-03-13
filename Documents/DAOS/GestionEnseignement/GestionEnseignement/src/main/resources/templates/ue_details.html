@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- Utilisation correcte de th:href pour les ressources CSS -->
+    <link rel="stylesheet" href="../static/css/bootstrap.css" th:href="@{/css/bootstrap.css}"/>
+    <link rel="stylesheet" href="../static/css/buttons.dataTables.min.css" th:href="@{/css/buttons.dataTables.min.css}"/>
+    <link rel="stylesheet" href="../static/css/jquery.dataTables.min.css" th:href="@{/css/jquery.dataTables.min.css}"/>
+
+    <!-- Style personnalisé -->
+    <style>
+        body {
+            padding: 0px;
+            background-color: #f4f7fc;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #003366;
+        }
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        .table thead th {
+            text-align: center;
+            background: linear-gradient(45deg, #003366, #0055A4);
+            color: white;
+            padding: 12px;
+            border-bottom: 2px solid #ddd;
+        }
+        .table tbody td {
+            text-align: center;
+            padding: 10px;
+            vertical-align: middle;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .table tbody tr:hover {
+            background-color: #e2e6ea;
+            transition: background 0.3s;
+        }
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn-primary {
+            background-color: #003366;
+            border: 1px solid #003366;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0055A4;
+            border-color: #0055A4;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border: 1px solid #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border: 1px solid #17a2b8;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: 1px solid #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .larg {
+            width: 430px;
+            text-align: center;
+        }
+        .miti {
+            width: 230px;
+            text-align: center;
+        }
+        .modal-content {
+            border-radius: 15px;
+        }
+        .modal-header {
+            background: linear-gradient(45deg, #003366, #0055A4);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+        .modal-title {
+            font-weight: bold;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            border-radius: 0 0 15px 15px;
+        }
+        .container {
+         width:1500px;
+        }
+
+
+        .navbar-nav  li a {
+            color: white !important; /* Blanc par défaut */
+           /* font-weight: bold; */
+            transition: color 0.3s ease-in-out;
+        }
+
+        /* Changement de couleur au survol */
+        .navbar-left li a:hover {
+            color: #FFC0CB !important; /* Rose clair au survol */
+        }
+        /* Changement de couleur au survol */
+        .navbar-right li a:hover {
+            color: #003366; !important; /* Bleu au survol */
+        }
+
+        /* Spécifique au menu déroulant */
+        .dropdown-menu li a {
+            color: black !important; /* Noir par défaut */
+        }
+
+        /* Changement de couleur au survol */
+        .dropdown-menu li a:hover {
+            color: #003366; !important;
+        }
+    </style>
+
+    <!-- Inclusion des JavaScript -->
+    <script src="../static/js/jquery-3.7.0.js" th:src="@{/js/jquery-3.7.0.js}"></script>
+    <script src="../static/js/bootstrap.js" th:src="@{/js/bootstrap.js}"></script>
+    <script src="../static/js/dataTables.buttons.min.js" th:src="@{/js/dataTables.buttons.min.js}"></script>
+    <script src="../static/js/jquery.dataTables.min.js" th:src="@{/js/jquery.dataTables.min.js}"></script>
+    <title>Gestion EC-UE</title>
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-inverse" style="background: linear-gradient(45deg, #003366, #0055A4);" >
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a th:href="@{/ChefDepartement/Accueil}"><span>Accueil</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/ChefDepartement/Enseignant}"><span>Utilisateurs</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/formation}"><span>Formation</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/ue}"><span>Syllabus</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/enseignements}"><span>Enseignements</span></a>
+                    </li>
+                    <li>
+                        <a  th:href="@{/repartitions/selection-classe-semestre}"><span>Repartition</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/seances/selection}"><span>Emploi du Temps</span></a>
+                    </li>
+                    <li>
+                        <a th:href="@{/seances/selection-semaine}"><span>Emploi du Temps Semaine</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="container">
+    <h1 class="text-center my-4">Gestion des Éléments de Cours (EC)</h1>
+
+    <!-- Bouton Ajouter EC -->
+    <div class="text-center mb-4">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#form_Ajouter_EC" style="background: linear-gradient(45deg, #003366, #0055A4); border-radius:25px; padding:10px;">Ajouter EC</button>
+    </div>
+
+    <!-- Début popup Ajouter EC -->
+    <div class="modal fade" id="form_Ajouter_EC" tabindex="-1" role="dialog" aria-labelledby="form_Ajouter_ECLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="form_Ajouter_ECLabel">Ajouter un Élément de Cours (EC)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form th:action="@{/ajouter_ec_ue}" method="post">
+                    <div class="modal-body">
+                        <!-- Champ caché pour l'ID de l'UE -->
+                        <input type="hidden" id="ue_id" name="ue.id" th:value="${ue.id}">
+
+                        <div class="form-group">
+                            <label for="code" class="control-label">Code</label>
+                            <input type="text" class="form-control" id="code" name="code" required placeholder="Entrez le code de l'EC">
+                        </div>
+                        <div class="form-group">
+                            <label for="libelle" class="control-label">Libellé</label>
+                            <input type="text" class="form-control" id="libelle" name="libelle" required placeholder="Entrez le libellé de l'EC">
+                        </div>
+                        <div class="form-group">
+                            <label for="cm" class="control-label">CM</label>
+                            <input type="number" class="form-control" id="cm" name="cm" required min="1" placeholder="Entrez le nombre d'heures en CM">
+                        </div>
+                        <div class="form-group">
+                            <label for="td" class="control-label">TD</label>
+                            <input type="number" class="form-control" id="td" name="td" required min="0" placeholder="Entrez le nombre d'heures en TD">
+                        </div>
+                        <div class="form-group">
+                            <label for="tp" class="control-label">TP</label>
+                            <input type="number" class="form-control" id="tp" name="tp" required min="0" placeholder="Entrez le nombre d'heures en TP">
+                        </div>
+                        <div class="form-group">
+                            <label for="tpe" class="control-label">TPE</label>
+                            <input type="number" class="form-control" id="tpe" name="tpe" required min="0" placeholder="Entrez le nombre d'heures en TPE">
+                        </div>
+                        <div class="form-group">
+                            <label for="coefficient" class="control-label">Coefficient</label>
+                            <input type="number" class="form-control" id="coefficient" name="coefficient" required min="1" placeholder="Entrez le coefficient">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px; padding:8px;">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Fin popup Ajouter EC -->
+
+    <!-- Lister tous les EC -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped" id="table_EC">
+            <thead>
+            <tr>
+                <th>Code</th>
+                <th class="miti">Libellé</th>
+                <th>CM</th>
+                <th>TD</th>
+                <th>TP</th>
+                <th>CM+TD/TP</th>
+                <th>TPE</th>
+                <th>VHT</th>
+                <th>Coefficient</th>
+                <th class="larg">Opérations</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ec : ${listeDesEC}">
+                <td th:text="${ec.code}"></td>
+                <td th:text="${ec.libelle}"></td>
+                <td th:text="${ec.cm}"></td>
+                <td th:text="${ec.td}"></td>
+                <td th:text="${ec.tp}"></td>
+                <!-- Calcul CM+TD/TP dans le modèle Java (en évitant la division par zéro) -->
+                <td th:text="${(ec.td == 0 && ec.tp == 0) ? ec.cm : (ec.tp == 0 ? ec.cm + ec.td : (ec.cm + ec.td) / ec.tp)}"></td>
+                <td th:text="${ec.tpe}"></td>
+                <td th:text="${ec.cm + ec.td + ec.tp + ec.tpe}"></td>
+                <td th:text="${ec.coefficient}"></td>
+                <td>
+                    <div class="btn-container">
+                        <button class="btn btn-info btn-sm" data-toggle="modal" th:data-target="'#form_Modifier_EC_' + ${ec.id}" style="border-radius:25px; padding:10px;">Modifier</button>
+                        <button class="btn btn-danger btn-sm" data-toggle="modal" th:data-target="'#form_Supprimer_EC_' + ${ec.id}" style="border-radius:25px; padding:10px;">Supprimer</button>
+                        <!-- Contrôle de l'archivage -->
+                        <button class="btn btn-warning btn-sm" th:data-target="'#form_Desarchiver_EC_' + ${ec.id}" data-toggle="modal" th:if="${ec.estArchivee}" style="border-radius:25px; padding:10px;">Désarchiver</button>
+                        <button class="btn btn-secondary btn-sm" th:data-target="'#form_Archiver_EC_' + ${ec.id}" data-toggle="modal" th:if="${!ec.estArchivee}" style=" border-radius:25px; padding:10px;">Archiver</button>
+                        <!-- Contrôle de l'activation -->
+                        <button class="btn btn-danger btn-sm" th:data-target="'#form_Desactiver_EC_' + ${ec.id}" data-toggle="modal" th:if="${ec.active}" style="border-radius:25px; padding:10px;">Désactiver</button>
+                        <button class="btn btn-success btn-sm" th:data-target="'#form_Activer_EC_' + ${ec.id}" data-toggle="modal" th:if="${!ec.active}" style="border-radius:25px; padding:10px;">Activer</button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#table_EC").DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                responsive: true,
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json"
+                }
+            });
+        });
+    </script>
+
+    <!-- Popup Modifier EC -->
+    <div class="modal fade" th:each="ec : ${listeDesEC}" th:attr="id='form_Modifier_EC_' + ${ec.id}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form th:action="@{/modifier_ec_ue}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Modifier EC</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" th:value="${ec.id}" />
+                        <input type="hidden" name="ue.id" th:value="${ec.ue.id}" /> <!-- Ajout de ce champ caché pour l'UE -->
+                        <div class="form-group">
+                            <label>Code</label>
+                            <input type="text" class="form-control" name="code" th:value="${ec.code}" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Libellé</label>
+                            <input type="text" class="form-control" name="libelle" th:value="${ec.libelle}" required />
+                        </div>
+                        <div class="form-group">
+                            <label>CM</label>
+                            <input type="number" class="form-control" name="cm" th:value="${ec.cm}" required />
+                        </div>
+                        <div class="form-group">
+                            <label>TD</label>
+                            <input type="number" class="form-control" name="td" th:value="${ec.td}" required />
+                        </div>
+                        <div class="form-group">
+                            <label>TP</label>
+                            <input type="number" class="form-control" name="tp" th:value="${ec.tp}" required />
+                        </div>
+                        <div class="form-group">
+                            <label>TPE</label>
+                            <input type="number" class="form-control" name="tpe" th:value="${ec.tpe}" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Coefficient</label>
+                            <input type="number" class="form-control" name="coefficient" th:value="${ec.coefficient}" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px; padding:8px;">Fermer</button>
+                        <button type="submit" class="btn btn-primary" style="border-radius:25px;">Sauvegarder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Fin popup Modifier EC -->
+
+    <!-- Popup Supprimer EC -->
+    <div class="modal fade" th:each="ec : ${listeDesEC}" th:attr="id='form_Supprimer_EC_' + ${ec.id}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form th:action="@{/supprimer_ec_ue}" method="post">
+                    <input type="hidden" name="id" th:value="${ec.id}" /> <!-- Champs caché pour l'ID de l'EC -->
+                    <div class="modal-header">
+                        <h5 class="modal-title">Supprimer EC</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Voulez-vous vraiment supprimer l'EC <span th:text="${ec.libelle}"></span> ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <button type="submit" class="btn btn-danger" style="border-radius:25px;">Supprimer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Fin popup Supprimer EC -->
+
+    <!-- Popup Archiver EC -->
+    <div class="modal fade" th:each="ec : ${listeDesEC}" th:attr="id='form_Archiver_EC_' + ${ec.id}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form th:action="@{/archiver_ec}" method="post">
+                    <input type="hidden" name="id" th:value="${ec.id}" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">Archiver EC</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Voulez-vous vraiment archiver l'EC <span th:text="${ec.libelle}"></span> ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <button type="submit" class="btn btn-warning" style="border-radius:25px;">Archiver</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Désarchiver EC -->
+    <div class="modal fade" th:each="ec : ${listeDesEC}" th:attr="id='form_Desarchiver_EC_' + ${ec.id}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form th:action="@{/desarchiver_ec}" method="post">
+                    <input type="hidden" name="id" th:value="${ec.id}" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">Désarchiver EC</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Voulez-vous vraiment désarchiver l'EC <span th:text="${ec.libelle}"></span> ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <button type="submit" class="btn btn-success" style="border-radius:25px;">Désarchiver</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Activer EC -->
+    <div class="modal fade" th:each="ec : ${listeDesEC}" th:attr="id='form_Activer_EC_' + ${ec.id}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form th:action="@{/activer_ec}" method="post">
+                    <input type="hidden" name="id" th:value="${ec.id}" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">Activer EC</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Voulez-vous vraiment activer l'EC <span th:text="${ec.libelle}"></span> ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <button type="submit" class="btn btn-info" style="border-radius:25px;">Activer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Désactiver EC -->
+    <div class="modal fade" th:each="ec : ${listeDesEC}" th:attr="id='form_Desactiver_EC_' + ${ec.id}" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form th:action="@{/desactiver_ec}" method="post">
+                    <input type="hidden" name="id" th:value="${ec.id}" />
+                    <div class="modal-header">
+                        <h5 class="modal-title">Désactiver EC</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Voulez-vous vraiment désactiver l'EC <span th:text="${ec.libelle}"></span> ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border-radius:25px;">Annuler</button>
+                        <button type="submit" class="btn btn-danger" style="border-radius:25px;">Désactiver</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+   <!--
+    <br>
+    <div class="btn-add">
+        <a class="btn btn-primary" style="background:linear-gradient(45deg, #003366, #0055A4); border-radius:25px;" th:href="@{/maquette}">Retour Maquette</a>
+    </div>
+    <br>
+    -->
+</div>
+</body>
+</html>
